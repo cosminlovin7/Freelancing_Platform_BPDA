@@ -4,6 +4,7 @@ import {ENVIRONMENT} from "config";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import {HomePage} from "pages/HomePage/HomePage";
 import {UnlockPage} from "pages/UnlockPage/UnlockPage";
+import {SignTransactionsModals, TransactionsToastList} from "@multiversx/sdk-dapp/UI";
 
 function App() {
 
@@ -12,6 +13,8 @@ function App() {
         environment={ENVIRONMENT}
     >
       <Router>
+          <SignTransactionsModals/>
+          <TransactionsToastList/>
           <Routes>
               <Route path="/" element={<HomePage/>}/>
               <Route path="/unlock" element={<UnlockPage/>}/>

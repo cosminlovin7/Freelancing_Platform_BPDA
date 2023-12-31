@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
 import {_useGetAgreementById} from "../../../hooks/queries/_useGetAgreementById.ts";
 
-export const ContractSumSection = () => {
+export const AgreementSection = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const sum = _useGetAgreementById(0x00);
+    const sum = _useGetAgreementById(0x01);
 
     useEffect(() => {
         console.log('this is called ');
@@ -26,7 +26,7 @@ export const ContractSumSection = () => {
                                     <div>Employer Address: {sum.employer_address.bech32()}</div>
                                     <div>Employee Address: {sum.employee_address.bech32()}</div>
                                     <div>Project ID: {sum.project_id}</div>
-                                    <div>Deadline: {new Date(sum.deadline).toDateString()}</div>
+                                    <div>Deadline: {new Date(sum.deadline * 1000).toString()}</div>
                                     <div>Value: {sum.value}</div>
                                 </>
                             ) : (
