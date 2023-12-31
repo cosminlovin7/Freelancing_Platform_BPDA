@@ -1,0 +1,168 @@
+{
+    "buildInfo": {
+        "rustc": {
+            "version": "1.71.0-nightly",
+            "commitHash": "a2b1646c597329d0a25efa3889b66650f65de1de",
+            "commitDate": "2023-05-25",
+            "channel": "Nightly",
+            "short": "rustc 1.71.0-nightly (a2b1646c5 2023-05-25)"
+        },
+        "contractCrate": {
+            "name": "freelancing-sc",
+            "version": "0.0.0"
+        },
+        "framework": {
+            "name": "multiversx-sc",
+            "version": "0.44.0"
+        }
+    },
+    "name": "FreelancingSmartContract",
+    "constructor": {
+        "inputs": [],
+        "outputs": []
+    },
+    "endpoints": [
+        {
+            "name": "employee_agreements",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "employee_addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<u32>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "employer_agreements",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "employer_addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<u32>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getAgreementCounter",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "getAgreementById",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "agreement_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "Agreement"
+                }
+            ]
+        },
+        {
+            "name": "getAgreementStatusById",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "agreement_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "AgreementStatus"
+                }
+            ]
+        },
+        {
+            "name": "create_agreement",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "employer_addr",
+                    "type": "Address"
+                },
+                {
+                    "name": "employee_addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": []
+        }
+    ],
+    "events": [],
+    "esdtAttributes": [],
+    "hasCallback": false,
+    "types": {
+        "Agreement": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "agreement_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "employer_address",
+                    "type": "Address"
+                },
+                {
+                    "name": "employee_address",
+                    "type": "Address"
+                },
+                {
+                    "name": "value",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "deadline",
+                    "type": "u64"
+                }
+            ]
+        },
+        "AgreementStatus": {
+            "type": "enum",
+            "variants": [
+                {
+                    "name": "Proposal",
+                    "discriminant": 0
+                },
+                {
+                    "name": "InProgress",
+                    "discriminant": 1
+                },
+                {
+                    "name": "Completed",
+                    "discriminant": 2
+                },
+                {
+                    "name": "Aborted",
+                    "discriminant": 3
+                }
+            ]
+        }
+    }
+}
