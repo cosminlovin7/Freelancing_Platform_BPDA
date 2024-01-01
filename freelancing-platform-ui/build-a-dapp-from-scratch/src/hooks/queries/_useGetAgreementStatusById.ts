@@ -26,10 +26,12 @@ export const _useGetAgreementStatusById = (agreementId:number) => {
                                 return 0;
                             case "InProgress":
                                 return 1;
-                            case "Completed":
+                            case "Declined":
                                 return 2;
-                            case "Aborted":
+                            case "Completed":
                                 return 3;
+                            case "Aborted":
+                                return 4;
                             default:
                                 return -1;
                         }

@@ -9,9 +9,9 @@ export const _useCreateAgreement = () => {
 
     const getCreateAgreementTransaction = () => {
         return _SmartContract.methods
-            .create_agreement([account.address, account.address])
-            .withValue(0)
-            .withGasLimit(5000000)
+            .create_agreement([account.address, 0x00])
+            .withValue(25 * 10**16)
+            .withGasLimit(10000000)
             .withChainID(getChainID())
             .withSender(Address.fromString(account.address))
             .buildTransaction()
@@ -24,9 +24,9 @@ export const _useCreateAgreement = () => {
         await sendTransactions({
             transactions: createAgreementTransaction,
             transactionsDisplayInfo: {
-                processingMessage: 'Processing Cancel transaction',
-                errorMessage: 'An error has occurred during Cancel',
-                successMessage: 'Cancel transaction successful'
+                processingMessage: 'Creating agreement in progress...',
+                errorMessage: 'An error has occurred during agreement creation',
+                successMessage: 'Agreement created successfully'
             },
             redirectAfterSign: false
         });

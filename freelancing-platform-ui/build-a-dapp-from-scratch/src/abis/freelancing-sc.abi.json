@@ -95,19 +95,75 @@
             ]
         },
         {
+            "name": "getProjectHasAgreementInProgress",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "bool"
+                }
+            ]
+        },
+        {
             "name": "create_agreement",
             "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
             "inputs": [
                 {
                     "name": "employer_addr",
                     "type": "Address"
                 },
                 {
+                    "name": "proj_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "accept_agreement",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "agreement_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "complete_agreement",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "agreement_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getEmployeeAgreements",
+            "mutability": "readonly",
+            "inputs": [
+                {
                     "name": "employee_addr",
                     "type": "Address"
                 }
             ],
-            "outputs": []
+            "outputs": [
+                {
+                    "type": "variadic<Agreement>",
+                    "multi_result": true
+                }
+            ]
         }
     ],
     "events": [],
@@ -155,12 +211,16 @@
                     "discriminant": 1
                 },
                 {
-                    "name": "Completed",
+                    "name": "Declined",
                     "discriminant": 2
                 },
                 {
-                    "name": "Aborted",
+                    "name": "Completed",
                     "discriminant": 3
+                },
+                {
+                    "name": "Aborted",
+                    "discriminant": 4
                 }
             ]
         }

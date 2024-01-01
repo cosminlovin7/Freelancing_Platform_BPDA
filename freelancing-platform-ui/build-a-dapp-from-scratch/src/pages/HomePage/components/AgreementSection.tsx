@@ -3,14 +3,14 @@ import {_useGetAgreementById} from "../../../hooks/queries/_useGetAgreementById.
 
 export const AgreementSection = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const sum = _useGetAgreementById(0x01);
+    const agreement = _useGetAgreementById(0x00);
 
     useEffect(() => {
         console.log('this is called ');
-        if (null != sum) {
+        if (null != agreement) {
             setIsLoading(false);
         }
-    }, [sum])
+    }, [agreement])
 
     return (
         <>
@@ -20,14 +20,14 @@ export const AgreementSection = () => {
                 (
                     <div>
                         {
-                            null != sum ? (
+                            null != agreement ? (
                                 <>
-                                    <div>Agreement ID: {sum.agreement_id}</div>
-                                    <div>Employer Address: {sum.employer_address.bech32()}</div>
-                                    <div>Employee Address: {sum.employee_address.bech32()}</div>
-                                    <div>Project ID: {sum.project_id}</div>
-                                    <div>Deadline: {new Date(sum.deadline * 1000).toString()}</div>
-                                    <div>Value: {sum.value}</div>
+                                    <div>Agreement ID: {agreement.agreement_id}</div>
+                                    <div>Employer Address: {agreement.employer_address.bech32()}</div>
+                                    <div>Employee Address: {agreement.employee_address.bech32()}</div>
+                                    <div>Project ID: {agreement.project_id}</div>
+                                    <div>Deadline: {new Date(agreement.deadline * 1000).toString()}</div>
+                                    <div>Value: {agreement.value}</div>
                                 </>
                             ) : (
                                 <>

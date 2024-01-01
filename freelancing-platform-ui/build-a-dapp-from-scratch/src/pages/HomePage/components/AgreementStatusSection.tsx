@@ -6,7 +6,6 @@ export const AgreementStatusSection = () => {
     const agreementStatusById = _useGetAgreementStatusById(0x00);
 
     useEffect(() => {
-        console.log('this is called ');
         if (null != agreementStatusById) {
             setIsLoading(false);
         }
