@@ -7,7 +7,7 @@
     padding: 100px 15%;
 
     font-weight: 600;
-    height: 600px;
+    /*height: 600px;*/
 }
 
 .container-2 {
@@ -72,3 +72,27 @@
     align-items: center;
     flex-direction: column;
 }
+
+@media screen and (max-width: 950px) {
+    .container-3-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+}
+
+/*@media screen and (max-width: 750px) {*/
+/*    .container-3-grid {*/
+/*        grid-template-columns: repeat(3, 1fr);*/
+/*    }*/
+/*}*/
+
+/*@media screen and (max-width: 550px) {*/
+/*    .container-3-grid {*/
+/*        grid-template-columns: repeat(2, 1fr);*/
+/*    }*/
+/*}*/
+
+/*@media screen and (max-width: 350px) {*/
+/*    .container-3-grid {*/
+/*        grid-template-columns: repeat(1, 1fr);*/
+/*    }*/
+/*}*/

@@ -35,7 +35,7 @@ export const HomePagev2 = () => {
             <Navbar isLoggedIn={isLoggedIn} menuList={[{name:"My Projects", url:"/projects"}, {name:"My Agreements", url:"/agreements"}]}/>
             <div className="container-1">
                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <img src="https://www.creativefabrica.com/wp-content/uploads/2021/09/13/1631555634/Turn-Ideas-Into-Reality.jpg" style={{display: isContainer1ImgLoaded ? "block" : "none"}} onLoad={handleContainer1ImgLoad} alt="Ideas to Reality"/>
+                        <img src="https://www.creativefabrica.com/wp-content/uploads/2021/09/13/1631555634/Turn-Ideas-Into-Reality.jpg" style={{borderRadius: 5, maxWidth: "100%", maxHeight: "100%", display: isContainer1ImgLoaded ? "block" : "none"}} onLoad={handleContainer1ImgLoad} alt="Ideas to Reality"/>
                         <LoadingSpinner style={{display: !isContainer1ImgLoaded ? "grid" : "none"}}/>
                 </div>
                 <div className="create-project-container">
