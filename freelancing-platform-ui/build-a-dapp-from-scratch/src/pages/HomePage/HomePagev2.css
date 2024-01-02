@@ -1,0 +1,71 @@
+.container-1, .container-2 {
+    /*height: 1500px;*/
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 100px 15%;
+
+    font-weight: 600;
+    height: 600px;
+}
+
+.container-2 {
+    background-color: #1b2430;
+    color: white;
+}
+
+.container-3 {
+    padding: 100px 15%;
+    color: #1b2430;
+}
+
+.container-1 div, .container-2 div {
+    flex: 1;
+}
+
+.create-project-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.create-project-button {
+    padding: 20px;
+    background-color: #1b2430;
+    border: none;
+    border-radius: 15px;
+    /*box-shadow: 0 0 10px rgba(0, 0, 0, 1);*/
+
+    font-size: 24px;
+    font-weight: 600;
+    color: white;
+}
+
+.create-project-button:hover {
+    background-color: #17cf97;
+    transition: background-color 0.3s;
+    cursor: pointer;
+}
+
+@media screen and (max-width: 769px) {
+    .container-1, .container-2 {
+        flex-direction: column;
+    }
+}
+
+.container-3-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px; /* Adjust the gap between grids as needed */
+}
+
+.container-3-grid div {
+    flex: 1;
+    padding: 20px; /* Adjust the padding as needed */
+    /*background-color: #f0f0f0;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

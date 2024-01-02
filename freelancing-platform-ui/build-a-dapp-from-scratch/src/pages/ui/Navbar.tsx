@@ -31,7 +31,7 @@ class Navbar extends Component<NavbarProps> {
         return (
             <nav>
                 <a href="/">
-                    <img src="https://cdn.worldvectorlogo.com/logos/freelancer-1.svg" alt="Logo" width="64"
+                    <img src="https://icon-library.com/images/freelancer-icon/freelancer-icon-17.jpg" alt="Logo" width="64"
                          height="64"/>
                 </a>
                 <div>

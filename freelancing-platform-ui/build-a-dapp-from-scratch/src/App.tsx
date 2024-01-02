@@ -6,6 +6,7 @@ import {HomePage} from "pages/HomePage/HomePage";
 import {UnlockPage} from "pages/UnlockPage/UnlockPage";
 import {SignTransactionsModals, TransactionsToastList} from "@multiversx/sdk-dapp/UI";
 import {TestPage} from "./pages/TestPage.tsx";
+import {HomePagev2} from "./pages/HomePage/HomePagev2.tsx";
 
 function App() {
 
@@ -20,6 +21,7 @@ function App() {
               <Route path="/" element={<HomePage/>}/>
               <Route path="/unlock" element={<UnlockPage/>}/>
               <Route path="/test" element={<TestPage/>}/>
+              <Route path="/v2" element={<HomePagev2/>}/>
           </Routes>
       </Router>
     </DappProvider>
