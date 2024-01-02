@@ -1,13 +1,14 @@
-import loadinggif from "images/loading.gif";
+import "./LoadingSpinner.css";
 
 interface LoadingSpinnerProps {
     style?: React.CSSProperties;
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({style}) => (
-    <img
-        src={loadinggif} // Replace with the path or URL to your loading spinner GIF
-        alt="Loading..."
-        style={{...style}}
-    />
-);
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({style}) => {
+    return (
+        <div className="spinner-container" style={{...style}}>
+            <div className="loading-spinner">
+            </div>
+        </div>
+    );
+}

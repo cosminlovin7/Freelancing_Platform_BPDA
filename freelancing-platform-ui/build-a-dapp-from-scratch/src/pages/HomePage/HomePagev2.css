@@ -22,6 +22,9 @@
 
 .container-1 div, .container-2 div {
     flex: 1;
+    /*display: flex;*/
+    /*justify-content: center;*/
+    /*align-items: center;*/
 }
 
 .create-project-container {

@@ -36,7 +36,7 @@ export const HomePagev2 = () => {
             <div className="container-1">
                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         <img src="https://www.creativefabrica.com/wp-content/uploads/2021/09/13/1631555634/Turn-Ideas-Into-Reality.jpg" style={{display: isContainer1ImgLoaded ? "block" : "none"}} onLoad={handleContainer1ImgLoad} alt="Ideas to Reality"/>
-                        <LoadingSpinner style={{display: !isContainer1ImgLoaded ? "block" : "none"}}/>
+                        <LoadingSpinner style={{display: !isContainer1ImgLoaded ? "grid" : "none"}}/>
                 </div>
                 <div className="create-project-container">
                     <button className="create-project-button">
@@ -83,8 +83,8 @@ export const HomePagev2 = () => {
                     </div>
                 </div>
                 <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                    <img src={businesspeopleimage} style={{borderRadius: 5, maxWidth: "100%", maxHeight: "100%", display: isContainer1ImgLoaded ? "block" : "none"}} alt="Successful business"/>
-                    <LoadingSpinner style={{display: !isContainer1ImgLoaded ? "block" : "none"}}/>
+                    <img src={businesspeopleimage} style={{borderRadius: 5, maxWidth: "100%", maxHeight: "100%", display: isContainer2ImgLoaded ? "block" : "none"}} onLoad={handleContainer2ImgLoad} alt="Successful business"/>
+                    <LoadingSpinner style={{display: !isContainer2ImgLoaded ? "grid" : "none"}}/>
                 </div>
             </div>
             <div className="container-3">
