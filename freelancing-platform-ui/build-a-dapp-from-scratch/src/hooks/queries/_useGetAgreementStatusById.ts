@@ -4,6 +4,7 @@ import {API_URL} from "../../config";
 import {_SmartContract} from "../../utils/_SmartContract.ts";
 import {ResultsParser} from "@multiversx/sdk-core/out";
 import {_AgreementStatusType} from "../../types/_AgreementStatusType.ts";
+import {_ResponseAgreementStatusType} from "../../types/_ResponseAgreementStatusType.ts";
 
 export const _useGetAgreementStatusById = (agreementId:number) => {
     const [queryResult, setQueryResult] = useState<_AgreementStatusType | null | undefined>(null);
@@ -19,7 +20,7 @@ export const _useGetAgreementStatusById = (agreementId:number) => {
             const {firstValue: agreementStatusResult} = new ResultsParser().parseQueryResponse(response, interaction.getEndpoint());
 
             if (agreementStatusResult) {
-                const agreementStatusDeserialized:_AgreementStatusType = (function(_agreementStatus) {
+                const agreementStatusDeserialized:_AgreementStatusType = (function(_agreementStatus: _ResponseAgreementStatusType) {
                     const _discriminant = (function() {
                         switch(_agreementStatus.name) {
                             case "Proposal":
@@ -43,8 +44,6 @@ export const _useGetAgreementStatusById = (agreementId:number) => {
                     }
                 })(agreementStatusResult.valueOf());
 
-                console.log(agreementStatusDeserialized);
-
                 return agreementStatusDeserialized;
             }
 
@@ -59,7 +58,6 @@ export const _useGetAgreementStatusById = (agreementId:number) => {
 
         getAgreementStatusById(agreementId)
             .then((data) => {
-                console.log('query returned successfully');
                 if (mountedComponent) {
                     setQueryResult(data);
                 } else {

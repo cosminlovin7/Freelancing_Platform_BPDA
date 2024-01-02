@@ -3,14 +3,13 @@ import {_useGetEmployeeAgreements} from "../../../hooks/queries/_useGetEmployeeA
 
 export const EmployeeAgreementsSection = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const agreements = _useGetEmployeeAgreements();
+    const employeeAgreementsList = _useGetEmployeeAgreements();
 
     useEffect(() => {
-        console.log('this is called ');
-        if (null != agreements) {
+        if (null != employeeAgreementsList) {
             setIsLoading(false);
         }
-    }, [agreements])
+    }, [employeeAgreementsList])
 
     return (
         <>
@@ -20,13 +19,18 @@ export const EmployeeAgreementsSection = () => {
                     (
                         <div>
                             {
-                                null != agreements ? (
+                                null != employeeAgreementsList ? (
                                     <>
                                         <div>Agreements: #todo</div>
+                                        <ul>
+                                            {employeeAgreementsList.map((item, index) => (
+                                                <li key={index}>{item.agreement_id} [PROJECT ID]:{item.project_id} [STATUS]:{item.status.name}({item.status.discriminant})</li>
+                                            ))}
+                                        </ul>
                                     </>
                                 ) : (
                                     <>
-                                        <div>Couldn't fetch info about raised sum.</div>
+                                    <div>Couldn't fetch info about raised sum.</div>
                                     </>
                                 )
                             }

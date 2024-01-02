@@ -160,7 +160,7 @@
             ],
             "outputs": [
                 {
-                    "type": "variadic<Agreement>",
+                    "type": "variadic<AgreementDto>",
                     "multi_result": true
                 }
             ]
@@ -196,6 +196,39 @@
                 {
                     "name": "deadline",
                     "type": "u64"
+                }
+            ]
+        },
+        "AgreementDto": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "agreement_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "employer_address",
+                    "type": "Address"
+                },
+                {
+                    "name": "employee_address",
+                    "type": "Address"
+                },
+                {
+                    "name": "value",
+                    "type": "BigUint"
+                },
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "deadline",
+                    "type": "u64"
+                },
+                {
+                    "name": "status",
+                    "type": "AgreementStatus"
                 }
             ]
         },

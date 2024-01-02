@@ -6,7 +6,6 @@ export const AgreementSection = () => {
     const agreement = _useGetAgreementById(0x00);
 
     useEffect(() => {
-        console.log('this is called ');
         if (null != agreement) {
             setIsLoading(false);
         }

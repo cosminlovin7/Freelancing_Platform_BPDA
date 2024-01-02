@@ -4,6 +4,8 @@ import {API_URL} from "../../config";
 import {ProxyNetworkProvider} from "@multiversx/sdk-network-providers/out";
 import {_SmartContract} from "../../utils/_SmartContract.ts";
 import {ResultsParser} from "@multiversx/sdk-core/out";
+import {_ResponseAgreementStatusType} from "../../types/_ResponseAgreementStatusType.ts";
+import {_ResponseAgreementType} from "../../types/_ResponseAgreementType.ts";
 export const _useGetAgreementById = (agreementId:number) => {
     const [queryResult, setQueryResult] = useState<_AgreementType | null | undefined>(null);
 
@@ -18,7 +20,7 @@ export const _useGetAgreementById = (agreementId:number) => {
             const {firstValue: agreementResult} = new ResultsParser().parseQueryResponse(response, interaction.getEndpoint());
 
             if (agreementResult) {
-                const agreementDeserialized:_AgreementType = (function(_agreement:_AgreementType) {
+                const agreementDeserialized:_AgreementType = (function(_agreement: _ResponseAgreementType) {
                     return {
                         agreement_id: _agreement.agreement_id.valueOf(),
                         deadline: _agreement.deadline.valueOf(),
@@ -28,8 +30,6 @@ export const _useGetAgreementById = (agreementId:number) => {
                         value: _agreement.value.valueOf()
                     }
                 })(agreementResult.valueOf());
-
-                console.log(agreementDeserialized);
 
                 return agreementDeserialized;
             }
@@ -45,7 +45,6 @@ export const _useGetAgreementById = (agreementId:number) => {
 
         getAgreementById(agreementId)
             .then((data) => {
-                console.log('query returned successfully');
                 if (mountedComponent) {
                     setQueryResult(data);
                 } else {

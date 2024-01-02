@@ -19,10 +19,12 @@
     "build:testnet": "yarn config:testnet && yarn build"
   },
   "dependencies": {
+    "@fortawesome/react-fontawesome": "^0.2.0",
     "@multiversx/sdk-core": "12.9.0",
     "@multiversx/sdk-dapp": "2.21.1",
     "@multiversx/sdk-network-providers": "2.0.0",
     "@multiversx/sdk-web-wallet-provider": "^3.1.0",
+    "font-awesome": "^4.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1"
