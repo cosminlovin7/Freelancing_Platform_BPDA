@@ -8,8 +8,6 @@ export const _useCreateProject = () => {
     const {account} = useGetAccountInfo();
 
     const getCreateProjectTransaction = (project_name: string, project_description: string) => {
-        console.log(Buffer.from(project_name, 'utf-8').toString('hex'));
-
         return _SmartContract.methods
             .create_project([
                 Buffer.from(project_name, 'utf-8').toString('hex'),

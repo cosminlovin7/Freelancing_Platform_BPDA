@@ -28,6 +28,7 @@ nav {
 #navbar li a:hover,
 #navbar li a.active {
     color: #17cf97;
+    cursor: pointer;
 }
 
 #navbar li a:hover::after,
@@ -48,6 +49,11 @@ nav {
 #mobile i {
     color: #fff;
     align-items: center;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
 }
 
 @media screen and (max-width: 769px) {

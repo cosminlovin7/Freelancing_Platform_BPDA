@@ -7,7 +7,7 @@ export const BalanceSection = () => {
 
     return (
         <div>
-            Your balance: <FormatAmount value={account.balance} egldLabel={network.egldLabel}/>
+            Balance: <FormatAmount value={account.balance} egldLabel={network.egldLabel}/>
         </div>
     )
 }

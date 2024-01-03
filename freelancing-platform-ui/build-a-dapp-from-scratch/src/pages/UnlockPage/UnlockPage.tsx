@@ -4,32 +4,31 @@ import {
 } from "@multiversx/sdk-dapp/UI";
 import {useNavigate} from "react-router-dom";
 import {useGetIsLoggedIn} from "@multiversx/sdk-dapp/hooks";
-import {useEffect} from "react";
 
 export const UnlockPage = () => {
     const navigate = useNavigate();
     const isLoggedIn = useGetIsLoggedIn();
 
-    useEffect(() => {
-        // Function to be triggered after 3 seconds
-        const delayedFunction = () => {
-            // Your logic here
-            navigate("/");
-        };
-
-        let timeoutId: NodeJS.Timeout | null = null;
-        if (isLoggedIn) {
-            // Set a timeout for 5 seconds
-            timeoutId = setTimeout(delayedFunction, 3000);
-        }
-
-        // Clear the timeout if the component unmounts before 3 seconds
-        return () => {
-            if (null != timeoutId) {
-                clearTimeout(timeoutId);
-            }
-        }
-    }, []);
+    // useEffect(() => {
+    //     // Function to be triggered after 3 seconds
+    //     const delayedFunction = () => {
+    //         // Your logic here
+    //         navigate("/");
+    //     };
+    //
+    //     let timeoutId: NodeJS.Timeout | null = null;
+    //     if (isLoggedIn) {
+    //         // Set a timeout for 5 seconds
+    //         timeoutId = setTimeout(delayedFunction, 3000);
+    //     }
+    //
+    //     // Clear the timeout if the component unmounts before 3 seconds
+    //     return () => {
+    //         if (null != timeoutId) {
+    //             clearTimeout(timeoutId);
+    //         }
+    //     }
+    // }, []);
 
     return (
         <div>
@@ -46,14 +45,14 @@ export const UnlockPage = () => {
                                 <h2>Login with:</h2>
                                 <ExtensionLoginButton
                                     loginButtonText="DeFi Wallet"
-                                    callbackRoute="/"
+                                    callbackRoute="/v2"
                                     onLoginRedirect={() => {
-                                        navigate("/");
+                                        navigate("/v2");
                                     }}
                                 />
                                 <WebWalletLoginButton
                                     loginButtonText="Web Wallet"
-                                    callbackRoute="/"
+                                    callbackRoute="/v2"
                                 />
                             </>
                         )

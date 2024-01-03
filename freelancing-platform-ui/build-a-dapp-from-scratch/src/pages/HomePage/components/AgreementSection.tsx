@@ -3,7 +3,7 @@ import {_useGetAgreementById} from "../../../hooks/queries/_useGetAgreementById.
 
 export const AgreementSection = () => {
     const [isLoading, setIsLoading] = useState(true);
-    const agreement = _useGetAgreementById(0x00);
+    const agreement = _useGetAgreementById(0x01);
 
     useEffect(() => {
         if (null != agreement) {

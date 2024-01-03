@@ -110,21 +110,6 @@
             ]
         },
         {
-            "name": "getUserRoleById",
-            "mutability": "readonly",
-            "inputs": [
-                {
-                    "name": "user_id",
-                    "type": "u32"
-                }
-            ],
-            "outputs": [
-                {
-                    "type": "UserRole"
-                }
-            ]
-        },
-        {
             "name": "getAccountCreationFee",
             "mutability": "readonly",
             "inputs": [],
@@ -260,6 +245,21 @@
             "outputs": []
         },
         {
+            "name": "getUserRole",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "UserRole"
+                }
+            ]
+        },
+        {
             "name": "create_project",
             "mutability": "mutable",
             "payableInTokens": [
@@ -283,6 +283,49 @@
             "inputs": [
                 {
                     "name": "user_addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<ProjectDto>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getProjectAgreements",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<AgreementDto>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "delete_project",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getPendingProjects",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user_address",
                     "type": "Address"
                 }
             ],

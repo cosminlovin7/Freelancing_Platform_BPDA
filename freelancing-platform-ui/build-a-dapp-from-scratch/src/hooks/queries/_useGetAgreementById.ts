@@ -4,7 +4,6 @@ import {API_URL} from "../../config";
 import {ProxyNetworkProvider} from "@multiversx/sdk-network-providers/out";
 import {_SmartContract} from "../../utils/_SmartContract.ts";
 import {ResultsParser} from "@multiversx/sdk-core/out";
-import {_ResponseAgreementStatusType} from "../../types/_ResponseAgreementStatusType.ts";
 import {_ResponseAgreementType} from "../../types/_ResponseAgreementType.ts";
 export const _useGetAgreementById = (agreementId:number) => {
     const [queryResult, setQueryResult] = useState<_AgreementType | null | undefined>(null);
