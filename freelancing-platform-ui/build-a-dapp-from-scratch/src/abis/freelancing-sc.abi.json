@@ -28,7 +28,7 @@
             "inputs": [
                 {
                     "name": "employee_addr",
-                    "type": "Address"
+                    "type": "u32"
                 }
             ],
             "outputs": [
@@ -44,7 +44,7 @@
             "inputs": [
                 {
                     "name": "employer_addr",
-                    "type": "Address"
+                    "type": "u32"
                 }
             ],
             "outputs": [
@@ -114,8 +114,8 @@
             "mutability": "readonly",
             "inputs": [
                 {
-                    "name": "user_addr",
-                    "type": "Address"
+                    "name": "user_id",
+                    "type": "u32"
                 }
             ],
             "outputs": [
@@ -435,12 +435,16 @@
             "type": "enum",
             "variants": [
                 {
-                    "name": "Freelancer",
+                    "name": "Visitor",
                     "discriminant": 0
                 },
                 {
-                    "name": "Client",
+                    "name": "Freelancer",
                     "discriminant": 1
+                },
+                {
+                    "name": "Client",
+                    "discriminant": 2
                 }
             ]
         }

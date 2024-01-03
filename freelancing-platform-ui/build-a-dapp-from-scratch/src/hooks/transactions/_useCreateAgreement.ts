@@ -10,7 +10,7 @@ export const _useCreateAgreement = () => {
     const getCreateAgreementTransaction = () => {
         return _SmartContract.methods
             .create_agreement([account.address, 0x00])
-            .withValue(25 * 10**16)
+            .withValue(25 * 10**15)
             .withGasLimit(10000000)
             .withChainID(getChainID())
             .withSender(Address.fromString(account.address))

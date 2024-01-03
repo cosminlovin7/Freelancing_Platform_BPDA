@@ -15,7 +15,7 @@ export const _useCreateProject = () => {
                 Buffer.from(project_name, 'utf-8').toString('hex'),
                 Buffer.from(project_description, 'utf-8').toString('hex')
             ])
-            .withValue(25 * 10**16)
+            .withValue(25 * 10**15)
             .withGasLimit(10000000)
             .withChainID(getChainID())
             .withSender(Address.fromString(account.address))
