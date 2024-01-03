@@ -9,13 +9,15 @@ import {AgreementSection} from "./components/AgreementSection";
 import {AgreementStatusSection} from "./components/AgreementStatusSection";
 import {_useCreateAgreement} from "../../hooks/transactions/_useCreateAgreement.ts";
 import {EmployeeAgreementsSection} from "./components/EmployeeAgreementsSection.tsx";
+import {_useCreateProject} from "../../hooks/transactions/_useCreateProject.ts";
+import {UserProjectsSection} from "./components/UserProjectsSection.tsx";
 
 export const HomePage = () => {
     const isLoggedIn = useGetIsLoggedIn();
     const navigate = useNavigate();
     const account = useGetAccount();
     const {onCreateAgreement} = _useCreateAgreement();
-
+    const {onCreateProject} = _useCreateProject();
     console.log("is logged in: " + isLoggedIn);
     console.log("account: " + JSON.stringify(account, null, 4));
 
@@ -29,9 +31,11 @@ export const HomePage = () => {
                     <AgreementSection/>
                     <AgreementStatusSection/>
                     <EmployeeAgreementsSection/>
+                    <UserProjectsSection/>
                     <button onClick={() => logout()}>Logout</button>
                     <button onClick={() => navigate("/test")}>Test Button</button>
                     <button onClick={() => onCreateAgreement()}>Create Default Agreement</button>
+                    <button onClick={() => onCreateProject("Test", "test")}>Create Default Project</button>
                 </>
             ) : (
                 <>

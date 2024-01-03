@@ -110,6 +110,66 @@
             ]
         },
         {
+            "name": "getUserRoleById",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user_addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "UserRole"
+                }
+            ]
+        },
+        {
+            "name": "getAccountCreationFee",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getProjectCreationFee",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "BigUint"
+                }
+            ]
+        },
+        {
+            "name": "getProjectCounter",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "getProjectStatus",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "ProjectStatus"
+                }
+            ]
+        },
+        {
             "name": "create_agreement",
             "mutability": "mutable",
             "payableInTokens": [
@@ -161,6 +221,74 @@
             "outputs": [
                 {
                     "type": "variadic<AgreementDto>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "getEmployerAgreements",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "employer_addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<AgreementDto>",
+                    "multi_result": true
+                }
+            ]
+        },
+        {
+            "name": "create_freelancer_account",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "create_client_account",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [],
+            "outputs": []
+        },
+        {
+            "name": "create_project",
+            "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
+            "inputs": [
+                {
+                    "name": "proj_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "proj_description",
+                    "type": "bytes"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "getUserProjects",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user_addr",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "variadic<ProjectDto>",
                     "multi_result": true
                 }
             ]
@@ -254,6 +382,65 @@
                 {
                     "name": "Aborted",
                     "discriminant": 4
+                }
+            ]
+        },
+        "ProjectDto": {
+            "type": "struct",
+            "fields": [
+                {
+                    "name": "project_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "project_name",
+                    "type": "bytes"
+                },
+                {
+                    "name": "project_description",
+                    "type": "bytes"
+                },
+                {
+                    "name": "owner_address",
+                    "type": "Address"
+                },
+                {
+                    "name": "project_status",
+                    "type": "ProjectStatus"
+                }
+            ]
+        },
+        "ProjectStatus": {
+            "type": "enum",
+            "variants": [
+                {
+                    "name": "PendingAgreement",
+                    "discriminant": 0
+                },
+                {
+                    "name": "InProgress",
+                    "discriminant": 1
+                },
+                {
+                    "name": "Completed",
+                    "discriminant": 2
+                },
+                {
+                    "name": "Aborted",
+                    "discriminant": 3
+                }
+            ]
+        },
+        "UserRole": {
+            "type": "enum",
+            "variants": [
+                {
+                    "name": "Freelancer",
+                    "discriminant": 0
+                },
+                {
+                    "name": "Client",
+                    "discriminant": 1
                 }
             ]
         }
