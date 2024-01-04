@@ -72,7 +72,7 @@
 }
 
 @media screen and (max-width: 769px) {
-    .container-1, .container-2, .user-project-container {
+    .container-1, .container-2, .user-project-container, .sub-user-project-agreements {
         flex-direction: column;
     }
 }
@@ -116,8 +116,14 @@
     font-weight: 600;
 }
 
-.user-project-container div, .user-project-agreements div {
+.user-project-container div {
     width: 50%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.user-project-agreements div {
+    width: 100%;
     word-wrap: break-word;
     overflow-wrap: break-word;
 }
@@ -131,6 +137,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.agreement-action {
+    flex-direction: column;
 }
 
 .user-role-error-container {
@@ -173,4 +183,10 @@
     background-color: #17cf97;
     transition: background-color 0.3s;
     cursor: pointer;
+}
+
+.sub-user-project-agreements {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

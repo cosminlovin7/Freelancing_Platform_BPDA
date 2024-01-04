@@ -300,6 +300,10 @@
                 {
                     "name": "project_id",
                     "type": "u32"
+                },
+                {
+                    "name": "user_address",
+                    "type": "Address"
                 }
             ],
             "outputs": [

@@ -31,10 +31,14 @@ import {useNavigate} from "react-router-dom";
 import {_UserRoleType} from "../../types/_UserRoleType.ts";
 import {_ResponseUserRoleType} from "../../types/_ResponseUserRoleType.ts";
 import {_useAssignUserRole} from "../../hooks/transactions/_useAssignUserRole.ts";
+import {_AgreementDtoType} from "../../types/_AgreementDtoType.ts";
+import {_ResponseAgreementDtoType} from "../../types/_ResponseAgreementDtoType.ts";
+import _InputField from "../ui/_InputField.tsx";
+import {_useCreateAgreement} from "../../hooks/transactions/_useCreateAgreement.ts";
+import {_useAcceptAgreement} from "../../hooks/transactions/_useAcceptAgreement.ts";
 
 export const HomePagev2 = () => {
     const isLoggedIn = useGetIsLoggedIn();
-    // const userRole = _useGetUserRole();
     const [userRole, setUserRole] = useState<_UserRoleType | undefined | null>(null);
     const navigate = useNavigate();
     const {account} = useGetAccountInfo();
@@ -47,13 +51,18 @@ export const HomePagev2 = () => {
     const [hidePendingProjectsSection, setPendingProjectsSection] = useState(true);
     const {onCreateProject} = _useCreateProject();
     const {onAssignUserRole} = _useAssignUserRole();
+    const {onCreateAgreement} = _useCreateAgreement();
+    const {onAcceptAgreement} = _useAcceptAgreement();
 
     const [isMyProjectsSectionLoading, setIsMyProjectsSectionLoading] = useState(true);
     const [isPendingProjectsSectionLoading, setIsPendingProjectsSectionLoading] = useState(true);
     const [userProjectsList, setUserProjectsList] = useState<_ProjectDtoType[] | null | undefined>(null);
     const [pendingProjectsList, setPendingProjectsList] = useState<_ProjectDtoType[] | null | undefined>(null);
     const [userProjectsAgreementsSection, setUserProjectsAgreementsSection] = useState<Map<number, boolean>>(new Map());
+    const [userProjectsAgreementsMap, setUserProjectsAgreementsMap] = useState<Map<number, _AgreementDtoType[] | null | undefined>>(new Map());
     const [userRoleSelection, setUserRoleSelection] = useState(0);
+    const [userPendingProjectAgreementsSection, setUserPendingProjectAgreementsSection] = useState<Map<number, boolean>>(new Map());
+    const [agreementOfferedValue, setAgreementOfferedValue] = useState<Map<number, number>>(new Map());
 
     useEffect(() => {
         if (null != userProjectsList) {
@@ -290,6 +299,66 @@ export const HomePagev2 = () => {
         } else {
             newMap.set(index, true);
         }
+
+        if (newMap.get(index) == true && userProjectsList) {
+            const networkProvider = new ProxyNetworkProvider(API_URL);
+            const interaction = _SmartContract.methods.getProjectAgreements([userProjectsList[index].project_id, account.address]);
+            const query = interaction.buildQuery();
+
+            const queryResponse = networkProvider.queryContract(query);
+
+            queryResponse.then((response) => {
+                const {firstValue: projectAgreementsList} = new ResultsParser().parseQueryResponse(response, interaction.getEndpoint());
+
+                if (projectAgreementsList) {
+                    const projectAgreementsListDeserialized: _AgreementDtoType[] = (function(_projectAgreementsList: _ResponseAgreementDtoType[]) {
+                        const _projectAgreementsListDeserialized: _AgreementDtoType[] = [];
+
+                        _projectAgreementsList.map((projectAgreement: _ResponseAgreementDtoType) => {
+                            const _discriminant = (function() {
+                                switch(projectAgreement.status.name) {
+                                    case "Proposal":
+                                        return 0;
+                                    case "InProgress":
+                                        return 1;
+                                    case "Declined":
+                                        return 2;
+                                    case "Completed":
+                                        return 3;
+                                    case "Aborted":
+                                        return 4;
+                                    default:
+                                        return -1;
+                                }
+                            })();
+
+                            _projectAgreementsListDeserialized.push({
+                                agreement_id: projectAgreement.agreement_id.valueOf(),
+                                deadline: projectAgreement.deadline.valueOf(),
+                                employee_address: projectAgreement.employee_address,
+                                employer_address: projectAgreement.employer_address,
+                                project_id: projectAgreement.project_id.valueOf(),
+                                value: projectAgreement.value.valueOf(),
+                                status: {
+                                    discriminant: _discriminant,
+                                    name: projectAgreement.status.name
+                                }
+                            })
+                        });
+
+                        return _projectAgreementsListDeserialized;
+                    })(projectAgreementsList.valueOf());
+
+                    console.log(projectAgreementsListDeserialized);
+
+                    const newProjectsAgreementsMap = new Map(userProjectsAgreementsMap);
+                    newProjectsAgreementsMap.set(index, projectAgreementsListDeserialized);
+
+                    setUserProjectsAgreementsMap(newProjectsAgreementsMap);
+                }
+            }).catch((e) => console.warn(e));
+        }
+
         setUserProjectsAgreementsSection(newMap);
     }
 
@@ -338,11 +407,61 @@ export const HomePagev2 = () => {
         })
     }
 
+    const handleSeeProjectAgreementProposal = (index: number) => {
+        const newMap = new Map(userPendingProjectAgreementsSection);
+        if (newMap.has(index)) {
+            const oldValue = newMap.get(index);
+            newMap.set(index, !oldValue);
+        } else {
+            newMap.set(index, true);
+        }
+
+        setUserPendingProjectAgreementsSection(newMap);
+
+        const newMap2 = new Map(agreementOfferedValue);
+        newMap2.set(index, 0);
+        setAgreementOfferedValue(newMap2);
+    }
+
+    const handleOfferedValueChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
+        const newMap = new Map(agreementOfferedValue);
+
+        newMap.set(index, parseInt(event.target.value));
+
+        setAgreementOfferedValue(newMap);
+    }
+
+    const handleCreateAgreementTransactionOnClick = (index: number) => {
+        try {
+            const proposedValue = agreementOfferedValue.get(index);
+            if (undefined != proposedValue && proposedValue > 0 && null != pendingProjectsList) {
+                onCreateAgreement(pendingProjectsList[index].owner_address, pendingProjectsList[index].project_id, proposedValue)
+                    .then(() => {})
+                    .catch((e) => console.warn(e));
+            }
+        } catch(e) {
+            console.warn(e);
+        }
+    }
+
+    const handleAcceptAgreementTransactionOnClick = (index: number) => {
+        try {
+            const userProjectAgreement = userProjectsAgreementsMap.get(index);
+            if (userProjectAgreement) {
+                onAcceptAgreement(userProjectAgreement[index].agreement_id)
+                    .then(() => console.log("agreement succesfully accepted"))
+                    .catch((e) => console.warn(e));
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
     return(
         <>
             <Navbar isLoggedIn={isLoggedIn} menuList={navbarMenu()} onClickLogout={() => logout("/v2")} onClickLogin={() => navigate('/unlock')} userRole={userRole?.name}/>
             {
-                null != userRole && (
+                null == userRole && isLoggedIn && (
                     <div className="user-role-error-container">
                         WARNING! User role not selected. Choose your user role:
                         <button className="user-role-input-button" onClick={() => handleUserRoleInputButtonOnClick(2)}
@@ -408,13 +527,43 @@ export const HomePagev2 = () => {
                                             <div className="user-project-agreements">
                                             {
                                                 true === userProjectsAgreementsSection.get(index) &&
-                                                    ( <>
-                                                        <div className="agreement-info">
-                                                            test
-                                                        </div>
-                                                        <div className="agreement-action">
-                                                            action buttons
-                                                        </div>
+                                                    (
+                                                        <>
+                                                            {
+                                                                userProjectsAgreementsMap.get(index)?.map((agreement, index) => (
+                                                                    <div className="sub-user-project-agreements" key={index}>
+                                                                        <div className="agreement-info">
+                                                                            <div>ID: {agreement.agreement_id}</div>
+                                                                            <div>Freelancer Address: {agreement.employee_address.bech32()}</div>
+                                                                            <div>Offered Sum: {agreement.value / 10 ** 18} (xEGLD)</div>
+                                                                            <div>Offer Expiring Date: {(() => {
+                                                                                const currentTimestamp = Date.now();
+
+                                                                                if (currentTimestamp > agreement.deadline * 1000) {
+                                                                                    return "Expired";
+                                                                                }
+
+                                                                                return new Date(agreement.deadline * 1000).toString();
+                                                                            })()}</div>
+                                                                            <div>Status: <span style={
+                                                                                {color: agreement.status.discriminant == 0 ? "yellow"
+                                                                                        : agreement.status.discriminant == 1 ? "pink"
+                                                                                        : agreement.status.discriminant == 2 ? "green" : "red"}}>{agreement.status.name}</span></div>
+                                                                        </div>
+                                                                        <div className="agreement-action">
+                                                                            {
+                                                                                agreement.status.discriminant == 0 && (<button className="create-project-with-transaction-button" onClick={() => handleAcceptAgreementTransactionOnClick(index)} style={{marginBottom: 10}}>Accept</button>)
+                                                                            }
+                                                                            {
+                                                                                agreement.status.discriminant == 0 && (<button className="create-project-with-transaction-button">Refuse</button>)
+                                                                            }
+                                                                            {
+                                                                                agreement.status.discriminant == 1 && (<button className="create-project-with-transaction-button">Abort</button>)
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                ))
+                                                            }
                                                         </>
                                                     )
                                             }
@@ -444,23 +593,22 @@ export const HomePagev2 = () => {
                                                     <div>Description: {item.project_description}</div>
                                                 </div>
                                                 <div className="user-project-action">
-                                                    <button className="action-button" onClick={() => handleSeeProjectAgreements(index)}>Propose Agreement</button>
+                                                    <button className="action-button" onClick={() => handleSeeProjectAgreementProposal(index)}>Propose Agreement</button>
                                                 </div>
                                             </div>
-                                            {/*<div className="user-project-agreements">*/}
-                                            {/*    {*/}
-                                            {/*        true === userProjectsAgreementsSection.get(index) &&*/}
-                                            {/*        ( <>*/}
-                                            {/*                <div className="agreement-info">*/}
-                                            {/*                    test*/}
-                                            {/*                </div>*/}
-                                            {/*                <div className="agreement-action">*/}
-                                            {/*                    action buttons*/}
-                                            {/*                </div>*/}
-                                            {/*            </>*/}
-                                            {/*        )*/}
-                                            {/*    }*/}
-                                            {/*</div>*/}
+                                            <div className="user-project-agreements">
+                                                {
+                                                    true === userPendingProjectAgreementsSection.get(index) &&
+                                                    (
+                                                        <>
+                                                            <div className="agreement-action">
+                                                                <_InputField label="Offered Value" type="number" value={agreementOfferedValue.get(index)} onChange={(event) => handleOfferedValueChange(index, event)} borderColor="#1b2430" outlineColor="#17cf97" marginBottom={15}/>
+                                                                <button className="create-project-with-transaction-button" onClick={() => handleCreateAgreementTransactionOnClick(index)}>Propose</button>
+                                                            </div>
+                                                        </>
+                                                    )
+                                                }
+                                            </div>
                                         </div>
                                     ))}
                                 </>

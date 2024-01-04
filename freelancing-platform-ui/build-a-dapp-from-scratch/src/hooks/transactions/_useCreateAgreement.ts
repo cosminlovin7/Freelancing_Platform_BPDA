@@ -7,10 +7,10 @@ import {sendTransactions} from "@multiversx/sdk-dapp/services";
 export const _useCreateAgreement = () => {
     const {account} = useGetAccountInfo();
 
-    const getCreateAgreementTransaction = () => {
+    const getCreateAgreementTransaction = (employer_addr: Address, project_id: number, offered_value: number) => {
         return _SmartContract.methods
-            .create_agreement([account.address, 0x00])
-            .withValue(25 * 10**15)
+            .create_agreement([employer_addr, project_id.toString(16)])
+            .withValue(offered_value * 10**15)
             .withGasLimit(10000000)
             .withChainID(getChainID())
             .withSender(Address.fromString(account.address))
@@ -18,8 +18,8 @@ export const _useCreateAgreement = () => {
             .toPlainObject()
     }
 
-    const onCreateAgreement = async () => {
-        const createAgreementTransaction = getCreateAgreementTransaction();
+    const onCreateAgreement = async (employer_addr: Address, project_id: number, offered_value: number) => {
+        const createAgreementTransaction = getCreateAgreementTransaction(employer_addr, project_id, offered_value);
 
         await sendTransactions({
             transactions: createAgreementTransaction,
