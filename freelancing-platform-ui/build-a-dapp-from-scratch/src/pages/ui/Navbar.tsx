@@ -14,7 +14,9 @@ interface NavbarProps {
     isLoggedIn: boolean,
     onClickLogin?: () => void,
     onClickLogout?: () => void,
-    userRole?: string
+    userRole?: string,
+    userRating?: number,
+    userRatingCount?: number
 }
 
 class Navbar extends Component<NavbarProps> {
@@ -26,6 +28,10 @@ class Navbar extends Component<NavbarProps> {
     state = {
         clicked: false
     };
+
+    userInfo = {
+        rating: this.props.userRating && this.props.userRatingCount ? this.props.userRating / this.props.userRatingCount : NaN
+     }
 
     handleMenuButtonClick = () => {
         this.setState({clicked: !this.state.clicked});
@@ -43,7 +49,10 @@ class Navbar extends Component<NavbarProps> {
                     this.props.isLoggedIn && (
                         <div className="user-info">
                             <div style={{color: "white"}}><BalanceSection/></div>
-                            <div style={{color: "white"}}>Role: {this.props.userRole? this.props.userRole : ''}</div>
+                            <div style={{color: "white"}}>Role: {this.props.userRole ? this.props.userRole : ''}</div>
+                            {
+                                this.props.userRole && this.props.userRole == 'Freelancer' && <div style={{color: "white"}}>Rating: {this.userInfo.rating}</div>
+                            }
                         </div>
                     )
                 }

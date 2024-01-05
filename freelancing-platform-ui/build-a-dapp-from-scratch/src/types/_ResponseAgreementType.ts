@@ -6,5 +6,6 @@ export type _ResponseAgreementType = {
     employee_address: Address,
     value: number,
     project_id: number,
-    deadline: number
+    deadline: number,
+    employee_rated: boolean
 }

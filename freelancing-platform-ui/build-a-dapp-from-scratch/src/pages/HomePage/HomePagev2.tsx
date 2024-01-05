@@ -36,10 +36,15 @@ import {_ResponseAgreementDtoType} from "../../types/_ResponseAgreementDtoType.t
 import _InputField from "../ui/_InputField.tsx";
 import {_useCreateAgreement} from "../../hooks/transactions/_useCreateAgreement.ts";
 import {_useAcceptAgreement} from "../../hooks/transactions/_useAcceptAgreement.ts";
+import {_useCompleteAgreement} from "../../hooks/transactions/_useCompleteAgreement.ts";
+import {_useAbortFreelancerAgreement} from "../../hooks/transactions/onAbortFreelancerAgreement.ts";
+import {_useAbortClientAgreement} from "../../hooks/transactions/onAbortClientAgreement.ts";
 
 export const HomePagev2 = () => {
     const isLoggedIn = useGetIsLoggedIn();
     const [userRole, setUserRole] = useState<_UserRoleType | undefined | null>(null);
+    const [userRating, setUserRating] = useState<number  | undefined>(NaN);
+    const [userRatingCount, setUserRatingCount] = useState<number  | undefined>(NaN);
     const navigate = useNavigate();
     const {account} = useGetAccountInfo();
     const [isContainer1ImgLoaded, setIsContainer1ImgLoaded] = useState(false);
@@ -49,13 +54,20 @@ export const HomePagev2 = () => {
     const [hideCreateProjectSection, setHideCreateProjectSection] = useState(true);
     const [hideMyProjectsSection, setHideMyProjectsSection] = useState(true);
     const [hidePendingProjectsSection, setPendingProjectsSection] = useState(true);
+    const [hideMyFreelancerAgreementsSection, setHideMyFreelancerAgreementsSection] = useState(true);
+    const [hideMyClientAgreementsSection, setHideMyClientAgreementsSection] = useState(true);
     const {onCreateProject} = _useCreateProject();
     const {onAssignUserRole} = _useAssignUserRole();
     const {onCreateAgreement} = _useCreateAgreement();
     const {onAcceptAgreement} = _useAcceptAgreement();
+    const {onCompleteAgreement} = _useCompleteAgreement();
+    const {onAbortFreelancerAgreement} = _useAbortFreelancerAgreement();
+    const {onAbortClientAgreement} = _useAbortClientAgreement();
 
     const [isMyProjectsSectionLoading, setIsMyProjectsSectionLoading] = useState(true);
     const [isPendingProjectsSectionLoading, setIsPendingProjectsSectionLoading] = useState(true);
+    const [isMyFreelancerAgreementsSectionLoading, setIsMyFreelancerAgreementsSectionLoading] = useState(true);
+    const [isMyClientAgreementsSectionLoading, setIsMyClientAgreementsSectionLoading] = useState(true);
     const [userProjectsList, setUserProjectsList] = useState<_ProjectDtoType[] | null | undefined>(null);
     const [pendingProjectsList, setPendingProjectsList] = useState<_ProjectDtoType[] | null | undefined>(null);
     const [userProjectsAgreementsSection, setUserProjectsAgreementsSection] = useState<Map<number, boolean>>(new Map());
@@ -63,6 +75,8 @@ export const HomePagev2 = () => {
     const [userRoleSelection, setUserRoleSelection] = useState(0);
     const [userPendingProjectAgreementsSection, setUserPendingProjectAgreementsSection] = useState<Map<number, boolean>>(new Map());
     const [agreementOfferedValue, setAgreementOfferedValue] = useState<Map<number, number>>(new Map());
+    const [myFreelancerAgreementsList, setMyFreelancerAgreementsList] = useState<_AgreementDtoType[] | null | undefined>(null);
+    const [myClientAgreementsList, setMyClientAgreementsList] = useState<_AgreementDtoType[] | null | undefined>(null);
 
     useEffect(() => {
         if (null != userProjectsList) {
@@ -77,6 +91,20 @@ export const HomePagev2 = () => {
             setIsPendingProjectsSectionLoading(false);
         }
     }, [pendingProjectsList])
+
+    useEffect(() => {
+        if (null != myFreelancerAgreementsList) {
+            console.log('my freelancing agreements');
+            setIsMyFreelancerAgreementsSectionLoading(false);
+        }
+    }, [myFreelancerAgreementsList])
+
+    useEffect(() => {
+        if (null != myClientAgreementsList) {
+            console.log('my client agreements');
+            setIsMyClientAgreementsSectionLoading(false);
+        }
+    }, [myClientAgreementsList])
 
     useEffect(() => {
         console.log('useEffect started');
@@ -116,6 +144,53 @@ export const HomePagev2 = () => {
             }
         }).catch((e) => console.warn(e));
     }, [account])
+
+    useEffect(() => {
+        if (userRole?.discriminant == 1) {
+            const networkProvider = new ProxyNetworkProvider(API_URL);
+            const interaction1 = _SmartContract.methods.getUserRating([account.address]);
+            const interaction2 = _SmartContract.methods.getUserRatingCounter([account.address]);
+            const query1 = interaction1.buildQuery();
+            const query2 = interaction2.buildQuery();
+
+            const queryResult1 = networkProvider.queryContract(query1);
+            const queryResult2 = networkProvider.queryContract(query2);
+
+            queryResult1.then((response) => {
+                const {firstValue: userRatingResult} = new ResultsParser().parseQueryResponse(response, interaction1.getEndpoint());
+
+                if (userRatingResult) {
+                    const userRatingDeserialized: number = (function(_userRating: number) {
+                        console.log(_userRating);
+                        const _userRatingDeserialized = _userRating;
+
+                        return _userRatingDeserialized;
+                    })(userRatingResult.valueOf());
+
+                    // return userRoleStatusDeserialized;
+                    console.log(userRatingDeserialized);
+                    setUserRating(userRatingDeserialized);
+                }
+            }).catch((e) => console.warn(e));
+
+            queryResult2.then((response) => {
+                const {firstValue: userRatingCounterResult} = new ResultsParser().parseQueryResponse(response, interaction2.getEndpoint());
+
+                if (userRatingCounterResult) {
+                    const userRatingCounterDeserialized: number = (function(_userRatingCounter: number) {
+                        console.log(_userRatingCounter);
+                        const _userRatingCounterDeserialized = _userRatingCounter;
+
+                        return _userRatingCounterDeserialized;
+                    })(userRatingCounterResult.valueOf());
+
+                    // return userRoleStatusDeserialized;
+                    console.log(userRatingCounterDeserialized);
+                    setUserRatingCount(userRatingCounterDeserialized);
+                }
+            }).catch((e) => console.warn(e));
+        }
+    }, [account, userRole])
 
     const handleContainer1ImgLoad = () => {
         setIsContainer1ImgLoaded(true);
@@ -342,7 +417,8 @@ export const HomePagev2 = () => {
                                 status: {
                                     discriminant: _discriminant,
                                     name: projectAgreement.status.name
-                                }
+                                },
+                                employee_rated: projectAgreement.employee_rated
                             })
                         });
 
@@ -362,6 +438,134 @@ export const HomePagev2 = () => {
         setUserProjectsAgreementsSection(newMap);
     }
 
+    const handleMyFreelancerAgreementsButtonOnClick = () => {
+        console.log('My freelancer agreements function called');
+
+        if (false == !hideMyFreelancerAgreementsSection) {
+            const networkProvider = new ProxyNetworkProvider(API_URL);
+            const interaction = _SmartContract.methods.getEmployeeAgreements([account.address]);
+            const query = interaction.buildQuery();
+            networkProvider
+                .queryContract(query)
+                .then((response) => {
+                    const {firstValue: myFreelancerAgreementsList} = new ResultsParser().parseQueryResponse(response, interaction.getEndpoint());
+                    if (myFreelancerAgreementsList) {
+                        const myFreelaancerAgreementsListDeserialiezd: _AgreementDtoType[] = (function(_myFreelancerAgreementsList: _ResponseAgreementDtoType[]) {
+                            const _myFreelancerAgreementsListDeserialized: _AgreementDtoType[] = [];
+
+                            _myFreelancerAgreementsList.map((freelancerAgreement: _ResponseAgreementDtoType) => {
+                                const _discriminant = (function() {
+                                    switch(freelancerAgreement.status.name) {
+                                        case "Proposal":
+                                            return 0;
+                                        case "InProgress":
+                                            return 1;
+                                        case "Declined":
+                                            return 2;
+                                        case "Completed":
+                                            return 3;
+                                        case "Aborted":
+                                            return 4;
+                                        default:
+                                            return -1;
+                                    }
+                                })();
+
+                                _myFreelancerAgreementsListDeserialized.push({
+                                    agreement_id: freelancerAgreement.agreement_id.valueOf(),
+                                    deadline: freelancerAgreement.deadline.valueOf(),
+                                    employee_address: freelancerAgreement.employee_address,
+                                    employer_address: freelancerAgreement.employer_address,
+                                    project_id: freelancerAgreement.project_id.valueOf(),
+                                    value: freelancerAgreement.value.valueOf(),
+                                    status: {
+                                        discriminant: _discriminant,
+                                        name: freelancerAgreement.status.name
+                                    },
+                                    employee_rated: freelancerAgreement.employee_rated
+                                })
+                            });
+
+                            return _myFreelancerAgreementsListDeserialized;
+                        })(myFreelancerAgreementsList.valueOf());
+
+                        setMyFreelancerAgreementsList(myFreelaancerAgreementsListDeserialiezd);
+                        setHideMyFreelancerAgreementsSection(!hideMyFreelancerAgreementsSection);
+                    }
+                })
+                .catch((e) => console.warn(e));
+        } else {
+            setHideMyFreelancerAgreementsSection(!hideMyFreelancerAgreementsSection);
+            setIsMyFreelancerAgreementsSectionLoading(true);
+        }
+    }
+
+    const handleMyClientAgreementsButtonOnClick = () => {
+        console.log('My client agreements function called');
+
+        if (false == !hideMyClientAgreementsSection) {
+            const networkProvider = new ProxyNetworkProvider(API_URL);
+            const interaction = _SmartContract.methods.getEmployerAgreements([account.address]);
+            const query = interaction.buildQuery();
+            networkProvider
+                .queryContract(query)
+                .then((response) => {
+                    const {firstValue: myClientAgreementsList} = new ResultsParser().parseQueryResponse(response, interaction.getEndpoint());
+                    if (myClientAgreementsList) {
+                        const myClientAgreementsListDeserialiezd: _AgreementDtoType[] = (function(_myClientAgreementsList: _ResponseAgreementDtoType[]) {
+                            const _myClientAgreementsListDeserialized: _AgreementDtoType[] = [];
+
+                            console.log(_myClientAgreementsList);
+
+                            _myClientAgreementsList.map((clientAgreement: _ResponseAgreementDtoType) => {
+                                const _discriminant = (function() {
+                                    switch(clientAgreement.status.name) {
+                                        case "Proposal":
+                                            return 0;
+                                        case "InProgress":
+                                            return 1;
+                                        case "Declined":
+                                            return 2;
+                                        case "Completed":
+                                            return 3;
+                                        case "Aborted":
+                                            return 4;
+                                        default:
+                                            return -1;
+                                    }
+                                })();
+
+                                _myClientAgreementsListDeserialized.push({
+                                    agreement_id: clientAgreement.agreement_id.valueOf(),
+                                    deadline: clientAgreement.deadline.valueOf(),
+                                    employee_address: clientAgreement.employee_address,
+                                    employer_address: clientAgreement.employer_address,
+                                    project_id: clientAgreement.project_id.valueOf(),
+                                    value: clientAgreement.value.valueOf(),
+                                    status: {
+                                        discriminant: _discriminant,
+                                        name: clientAgreement.status.name
+                                    },
+                                    employee_rated: clientAgreement.employee_rated
+                                })
+                            });
+
+                            return _myClientAgreementsListDeserialized;
+                        })(myClientAgreementsList.valueOf());
+
+                        console.log(myClientAgreementsListDeserialiezd);
+
+                        setMyClientAgreementsList(myClientAgreementsListDeserialiezd);
+                        setHideMyClientAgreementsSection(!hideMyClientAgreementsSection);
+                    }
+                })
+                .catch((e) => console.warn(e));
+        } else {
+            setHideMyClientAgreementsSection(!hideMyClientAgreementsSection);
+            setIsMyClientAgreementsSectionLoading(true);
+        }
+    }
+
     const navbarMenu: () => NavbarMenuItem[] = () => {
         const menu: NavbarMenuItem[] = [];
 
@@ -371,11 +575,11 @@ export const HomePagev2 = () => {
                 case 0:
                     break;
                 case 1: //Freelancer
-                    menu.push({name:"My Freelancer Agreements"});
+                    menu.push({name:"My Freelancer Agreements", onClickFunction:handleMyFreelancerAgreementsButtonOnClick});
                     menu.push({name:"Pending Projects", onClickFunction:handlePendingProjectsButtonOnClick});
                     break;
                 case 2: //Client
-                    menu.push({name:"My Client Agreements"});
+                    menu.push({name:"My Client Agreements", onClickFunction:handleMyClientAgreementsButtonOnClick});
                     menu.push({name:"My Projects", onClickFunction:handleMyProjectsButtonOnClick});
                     break;
                 default:
@@ -444,11 +648,13 @@ export const HomePagev2 = () => {
         }
     }
 
-    const handleAcceptAgreementTransactionOnClick = (index: number) => {
+    const handleAcceptAgreementTransactionOnClick = (index: number, index2: number) => {
+        console.log('button pressed, button_index ' + index2);
         try {
             const userProjectAgreement = userProjectsAgreementsMap.get(index);
+            console.log(userProjectsAgreementsMap);
             if (userProjectAgreement) {
-                onAcceptAgreement(userProjectAgreement[index].agreement_id)
+                onAcceptAgreement(userProjectAgreement[index2].agreement_id)
                     .then(() => console.log("agreement succesfully accepted"))
                     .catch((e) => console.warn(e));
             }
@@ -457,9 +663,54 @@ export const HomePagev2 = () => {
         }
     }
 
+    const handleCompleteFreelancerAgreementButtonOnClick = (index: number) => {
+        try {
+            if (null != myFreelancerAgreementsList) {
+                const freelancerAgreement = myFreelancerAgreementsList[index];
+                if (freelancerAgreement) {
+                    onCompleteAgreement(freelancerAgreement.agreement_id)
+                        .then(() => console.log("agreement succesfully completed"))
+                        .catch((e) => console.warn(e));
+                }
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
+    const handleAbortFreelancerAgreementButtonOnClick = (index: number) => {
+        try {
+            if (null != myFreelancerAgreementsList) {
+                const freelancerAgreement = myFreelancerAgreementsList[index];
+                if (freelancerAgreement) {
+                    onAbortFreelancerAgreement(freelancerAgreement.agreement_id)
+                        .then(() => console.log("agreement succesfully aborted"))
+                        .catch((e) => console.warn(e));
+                }
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
+    const handleAbortClientAgreementButtonOnClick = (index: number) => {
+        try {
+            if (null != myClientAgreementsList) {
+                const clientAgreement = myClientAgreementsList[index];
+                if (clientAgreement) {
+                    onAbortClientAgreement(clientAgreement.agreement_id)
+                        .then(() => console.log("agreement succesfully aborted"))
+                        .catch((e) => console.warn(e));
+                }
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
     return(
         <>
-            <Navbar isLoggedIn={isLoggedIn} menuList={navbarMenu()} onClickLogout={() => logout("/v2")} onClickLogin={() => navigate('/unlock')} userRole={userRole?.name}/>
+            <Navbar isLoggedIn={isLoggedIn} menuList={navbarMenu()} onClickLogout={() => logout("/v2")} onClickLogin={() => navigate('/unlock')} userRole={userRole?.name} userRating={userRating} userRatingCount={userRatingCount}/>
             {
                 null == userRole && isLoggedIn && (
                     <div className="user-role-error-container">
@@ -515,14 +766,17 @@ export const HomePagev2 = () => {
                                     {userProjectsList?.map((item, index) => (
                                         <div className="user-project-agreement-container" key={index}>
                                             <div className="user-project-container" style={{backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430", color: index % 2 == 0 ? "black" : "white"}}>
-                                                <div className="user-project-info">
-                                                    <div>ID: {item.project_id}</div>
-                                                    <div>Name: {item.project_name}</div>
-                                                    <div>Description: {item.project_description}</div>
+                                                <div className="user-project-info" style={{width: item.project_status.discriminant == 0 ? '50%' : '100%'}}>
+                                                    <div style={{width: '100%'}}>ID: {item.project_id}</div>
+                                                    <div style={{width: '100%'}}>Name: {item.project_name}</div>
+                                                    <div style={{width: '100%'}}>Description: {item.project_description}</div>
+                                                    <div style={{width: '100%'}}>Status: {item.project_status.name}</div>
                                                 </div>
-                                                <div className="user-project-action">
-                                                    <button className="action-button" onClick={() => handleSeeProjectAgreements(index)}>Project Agreements</button>
-                                                </div>
+                                                {
+                                                    item.project_status.discriminant == 0 && (<div className="user-project-action">
+                                                        <button className="action-button" onClick={() => handleSeeProjectAgreements(index)}>Project Agreements</button>
+                                                    </div>)
+                                                }
                                             </div>
                                             <div className="user-project-agreements">
                                             {
@@ -530,13 +784,13 @@ export const HomePagev2 = () => {
                                                     (
                                                         <>
                                                             {
-                                                                userProjectsAgreementsMap.get(index)?.map((agreement, index) => (
-                                                                    <div className="sub-user-project-agreements" key={index}>
+                                                                userProjectsAgreementsMap.get(index)?.map((agreement, index2) => (
+                                                                    <div className="sub-user-project-agreements" key={index2} style={{backgroundColor: "#17cf97", padding: 10}}>
                                                                         <div className="agreement-info">
-                                                                            <div>ID: {agreement.agreement_id}</div>
-                                                                            <div>Freelancer Address: {agreement.employee_address.bech32()}</div>
-                                                                            <div>Offered Sum: {agreement.value / 10 ** 18} (xEGLD)</div>
-                                                                            <div>Offer Expiring Date: {(() => {
+                                                                            <div style={{width: '100%'}}>ID: {agreement.agreement_id}</div>
+                                                                            <div style={{width: '100%'}}>Freelancer Address: {agreement.employee_address.bech32()}</div>
+                                                                            <div style={{width: '100%'}}>Offered Sum: {agreement.value / 10 ** 18} (xEGLD)</div>
+                                                                            <div style={{width: '100%'}}>Offer Expiring Date: {(() => {
                                                                                 const currentTimestamp = Date.now();
 
                                                                                 if (currentTimestamp > agreement.deadline * 1000) {
@@ -545,14 +799,17 @@ export const HomePagev2 = () => {
 
                                                                                 return new Date(agreement.deadline * 1000).toString();
                                                                             })()}</div>
-                                                                            <div>Status: <span style={
+                                                                            <div style={{width: '100%'}}>Status: <span style={
                                                                                 {color: agreement.status.discriminant == 0 ? "yellow"
                                                                                         : agreement.status.discriminant == 1 ? "pink"
                                                                                         : agreement.status.discriminant == 2 ? "green" : "red"}}>{agreement.status.name}</span></div>
+                                                                            <div style={{width: '100%'}}>
+                                                                                Employee rated: {agreement.employee_rated ? 'True' : 'False'}
+                                                                            </div>
                                                                         </div>
                                                                         <div className="agreement-action">
                                                                             {
-                                                                                agreement.status.discriminant == 0 && (<button className="create-project-with-transaction-button" onClick={() => handleAcceptAgreementTransactionOnClick(index)} style={{marginBottom: 10}}>Accept</button>)
+                                                                                agreement.status.discriminant == 0 && (<button className="create-project-with-transaction-button" onClick={() => handleAcceptAgreementTransactionOnClick(index, index2)} style={{marginBottom: 10}}>Accept</button>)
                                                                             }
                                                                             {
                                                                                 agreement.status.discriminant == 0 && (<button className="create-project-with-transaction-button">Refuse</button>)
@@ -588,9 +845,9 @@ export const HomePagev2 = () => {
                                         <div className="user-project-agreement-container" key={index}>
                                             <div className="user-project-container" style={{backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430", color: index % 2 == 0 ? "black" : "white"}}>
                                                 <div className="user-project-info">
-                                                    <div>ID: {item.project_id}</div>
-                                                    <div>Name: {item.project_name}</div>
-                                                    <div>Description: {item.project_description}</div>
+                                                    <div style={{width: '100%'}}>ID: {item.project_id}</div>
+                                                    <div style={{width: '100%'}}>Name: {item.project_name}</div>
+                                                    <div style={{width: '100%'}}>Description: {item.project_description}</div>
                                                 </div>
                                                 <div className="user-project-action">
                                                     <button className="action-button" onClick={() => handleSeeProjectAgreementProposal(index)}>Propose Agreement</button>
@@ -609,6 +866,147 @@ export const HomePagev2 = () => {
                                                     )
                                                 }
                                             </div>
+                                        </div>
+                                    ))}
+                                </>
+                            )
+                        }
+                    </div>
+                )
+            }
+            {
+                hideMyFreelancerAgreementsSection == false && (
+                    <div className="container-5">
+                        {
+                            isMyFreelancerAgreementsSectionLoading ? (
+                                <LoadingSpinner/>
+                            ) : (
+                                <>
+                                    {myFreelancerAgreementsList?.map((agreement, index) => (
+                                        <div className="user-project-agreement-container" key={index}>
+                                            <div className="user-project-container" style={{backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430", color: index % 2 == 0 ? "black" : "white"}}>
+                                                <div className="user-project-info">
+                                                    <div style={{width: '100%'}}>ID: {agreement.agreement_id}</div>
+                                                    <div style={{width: '100%'}}>Client
+                                                        Address: {agreement.employer_address.bech32()}</div>
+                                                    <div style={{width: '100%'}}>Offered
+                                                        Sum: {agreement.value / 10 ** 18} (xEGLD)
+                                                    </div>
+                                                    <div style={{width: '100%'}}>Offer Expiring Date: {(() => {
+                                                        const currentTimestamp = Date.now();
+
+                                                        if (currentTimestamp > agreement.deadline * 1000) {
+                                                            return "Expired";
+                                                        }
+
+                                                        return new Date(agreement.deadline * 1000).toString();
+                                                    })()}</div>
+                                                    <div style={{width: '100%'}}>Status: <span style={
+                                                        {
+                                                            color: agreement.status.discriminant == 0 ? "yellow"
+                                                                : agreement.status.discriminant == 1 ? "pink"
+                                                                    : agreement.status.discriminant == 2 ? "green" : "red"
+                                                        }}>{agreement.status.name}</span></div>
+                                                    <div style={{width: '100%'}}>
+                                                        Employee rated: {agreement.employee_rated ? 'True' : 'False'}
+                                                    </div>
+                                                </div>
+                                                <div className="user-project-action">
+                                                    {
+                                                        agreement.status.discriminant == 1 && (<button className="action-button"
+                                                            onClick={() => handleCompleteFreelancerAgreementButtonOnClick(index)}
+                                                            style={{marginRight: 10}}>Complete</button>
+                                                        )
+                                                    }
+                                                    <button className="action-button" onClick={() => handleAbortFreelancerAgreementButtonOnClick(index)}>Abort</button>
+                                                </div>
+                                            </div>
+                                            {/*<div className="user-project-agreements">*/}
+                                            {/*    {*/}
+                                            {/*        true === userPendingProjectAgreementsSection.get(index) &&*/}
+                                            {/*        (*/}
+                                            {/*            <>*/}
+                                            {/*                <div className="agreement-action">*/}
+                                            {/*                    <_InputField label="Offered Value" type="number" value={agreementOfferedValue.get(index)} onChange={(event) => handleOfferedValueChange(index, event)} borderColor="#1b2430" outlineColor="#17cf97" marginBottom={15}/>*/}
+                                            {/*                    <button className="create-project-with-transaction-button" onClick={() => handleCreateAgreementTransactionOnClick(index)}>Propose</button>*/}
+                                            {/*                </div>*/}
+                                            {/*            </>*/}
+                                            {/*        )*/}
+                                            {/*    }*/}
+                                            {/*</div>*/}
+                                        </div>
+                                    ))}
+                                </>
+                            )
+                        }
+                    </div>
+                )
+            }
+            {
+                hideMyClientAgreementsSection == false && (
+                    <div className="container-5">
+                        {
+                            isMyClientAgreementsSectionLoading ? (
+                                <LoadingSpinner/>
+                            ) : (
+                                <>
+                                    {myClientAgreementsList?.map((agreement, index) => (
+                                        <div className="user-project-agreement-container" key={index}>
+                                            <div className="user-project-container" style={{backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430", color: index % 2 == 0 ? "black" : "white"}}>
+                                                <div className="user-project-info">
+                                                    <div style={{width: '100%'}}>ID: {agreement.agreement_id}</div>
+                                                    <div style={{width: '100%'}}>Client
+                                                        Address: {agreement.employer_address.bech32()}</div>
+                                                    <div style={{width: '100%'}}>Offered
+                                                        Sum: {agreement.value / 10 ** 18} (xEGLD)
+                                                    </div>
+                                                    <div style={{width: '100%'}}>Offer Expiring Date: {(() => {
+                                                        const currentTimestamp = Date.now();
+
+                                                        if (currentTimestamp > agreement.deadline * 1000) {
+                                                            return "Expired";
+                                                        }
+
+                                                        return new Date(agreement.deadline * 1000).toString();
+                                                    })()}</div>
+                                                    <div style={{width: '100%'}}>Status: <span style={
+                                                        {
+                                                            color: agreement.status.discriminant == 0 ? "yellow"
+                                                                : agreement.status.discriminant == 1 ? "pink"
+                                                                    : agreement.status.discriminant == 2 ? "green" : "red"
+                                                        }}>{agreement.status.name}</span></div>
+                                                    <div style={{width: '100%'}}>
+                                                        Employee rated: {agreement.employee_rated ? 'True' : 'False'}
+                                                    </div>
+                                                </div>
+                                                <div className="user-project-action">
+                                                    {/*<button className="action-button"*/}
+                                                    {/*        onClick={() => handleSeeProjectAgreementProposal(index)}*/}
+                                                    {/*        style={{marginRight: 10}}>Mark as complete</button>*/}
+                                                    {
+                                                        !agreement.employee_rated
+                                                        && agreement.status.discriminant == 3
+                                                        &&  <button className="action-button" style={{marginRight: 10}} onClick={() => handleSeeProjectAgreementProposal(index)}>Rate</button>
+                                                    }
+                                                    {
+                                                        agreement.status.discriminant == 1
+                                                        && <button className="action-button" onClick={() => handleAbortClientAgreementButtonOnClick(index)}>Abort</button>
+                                                    }
+                                                </div>
+                                            </div>
+                                            {/*<div className="user-project-agreements">*/}
+                                            {/*    {*/}
+                                            {/*        true === userPendingProjectAgreementsSection.get(index) &&*/}
+                                            {/*        (*/}
+                                            {/*            <>*/}
+                                            {/*                <div className="agreement-action">*/}
+                                            {/*                    <_InputField label="Offered Value" type="number" value={agreementOfferedValue.get(index)} onChange={(event) => handleOfferedValueChange(index, event)} borderColor="#1b2430" outlineColor="#17cf97" marginBottom={15}/>*/}
+                                            {/*                    <button className="create-project-with-transaction-button" onClick={() => handleCreateAgreementTransactionOnClick(index)}>Propose</button>*/}
+                                            {/*                </div>*/}
+                                            {/*            </>*/}
+                                            {/*        )*/}
+                                            {/*    }*/}
+                                            {/*</div>*/}
                                         </div>
                                     ))}
                                 </>

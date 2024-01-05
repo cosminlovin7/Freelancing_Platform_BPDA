@@ -6,5 +6,6 @@ export type _AgreementType = {
     employee_address: Address,
     value: number,
     project_id: number,
-    deadline: number
+    deadline: number,
+    employee_rated: boolean
 }

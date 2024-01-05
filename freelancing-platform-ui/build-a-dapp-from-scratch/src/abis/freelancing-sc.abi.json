@@ -195,6 +195,28 @@
             "outputs": []
         },
         {
+            "name": "abort_employer_agreement",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "agreement_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
+            "name": "abort_employee_agreement",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "agreement_id",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
             "name": "getEmployeeAgreements",
             "mutability": "readonly",
             "inputs": [
@@ -227,6 +249,25 @@
             ]
         },
         {
+            "name": "rate_employee",
+            "mutability": "mutable",
+            "inputs": [
+                {
+                    "name": "agreement_id",
+                    "type": "u32"
+                },
+                {
+                    "name": "employee_addr",
+                    "type": "Address"
+                },
+                {
+                    "name": "employee_rating",
+                    "type": "u32"
+                }
+            ],
+            "outputs": []
+        },
+        {
             "name": "create_freelancer_account",
             "mutability": "mutable",
             "payableInTokens": [
@@ -256,6 +297,36 @@
             "outputs": [
                 {
                     "type": "UserRole"
+                }
+            ]
+        },
+        {
+            "name": "getUserRating",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u32"
+                }
+            ]
+        },
+        {
+            "name": "getUserRatingCounter",
+            "mutability": "readonly",
+            "inputs": [
+                {
+                    "name": "user_address",
+                    "type": "Address"
+                }
+            ],
+            "outputs": [
+                {
+                    "type": "u32"
                 }
             ]
         },
@@ -371,6 +442,10 @@
                 {
                     "name": "deadline",
                     "type": "u64"
+                },
+                {
+                    "name": "employee_rated",
+                    "type": "bool"
                 }
             ]
         },
@@ -404,6 +479,10 @@
                 {
                     "name": "status",
                     "type": "AgreementStatus"
+                },
+                {
+                    "name": "employee_rated",
+                    "type": "bool"
                 }
             ]
         },

@@ -8,5 +8,6 @@ export type _AgreementDtoType = {
     value: number,
     project_id: number,
     deadline: number,
-    status: _AgreementStatusType
+    status: _AgreementStatusType,
+    employee_rated: boolean
 }
