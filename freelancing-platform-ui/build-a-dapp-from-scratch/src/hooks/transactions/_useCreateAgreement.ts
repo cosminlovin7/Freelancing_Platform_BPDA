@@ -9,8 +9,8 @@ export const _useCreateAgreement = () => {
 
     const getCreateAgreementTransaction = (employer_addr: Address, project_id: number, offered_value: number) => {
         return _SmartContract.methods
-            .create_agreement([employer_addr, project_id.toString(16)])
-            .withValue(offered_value * 10**15)
+            .create_agreement([employer_addr, project_id, offered_value])
+            .withValue(0)
             .withGasLimit(10000000)
             .withChainID(getChainID())
             .withSender(Address.fromString(account.address))

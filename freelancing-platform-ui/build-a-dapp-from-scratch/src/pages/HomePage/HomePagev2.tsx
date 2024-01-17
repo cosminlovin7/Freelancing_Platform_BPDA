@@ -39,6 +39,7 @@ import {_useAcceptAgreement} from "../../hooks/transactions/_useAcceptAgreement.
 import {_useCompleteAgreement} from "../../hooks/transactions/_useCompleteAgreement.ts";
 import {_useAbortFreelancerAgreement} from "../../hooks/transactions/onAbortFreelancerAgreement.ts";
 import {_useAbortClientAgreement} from "../../hooks/transactions/onAbortClientAgreement.ts";
+import {_useRateFreelancer} from "../../hooks/transactions/_useRateFreelancer.ts";
 
 export const HomePagev2 = () => {
     const isLoggedIn = useGetIsLoggedIn();
@@ -63,6 +64,7 @@ export const HomePagev2 = () => {
     const {onCompleteAgreement} = _useCompleteAgreement();
     const {onAbortFreelancerAgreement} = _useAbortFreelancerAgreement();
     const {onAbortClientAgreement} = _useAbortClientAgreement();
+    const {onRateFreelancer} = _useRateFreelancer();
 
     const [isMyProjectsSectionLoading, setIsMyProjectsSectionLoading] = useState(true);
     const [isPendingProjectsSectionLoading, setIsPendingProjectsSectionLoading] = useState(true);
@@ -75,6 +77,12 @@ export const HomePagev2 = () => {
     const [userRoleSelection, setUserRoleSelection] = useState(0);
     const [userPendingProjectAgreementsSection, setUserPendingProjectAgreementsSection] = useState<Map<number, boolean>>(new Map());
     const [agreementOfferedValue, setAgreementOfferedValue] = useState<Map<number, number>>(new Map());
+    const [agreementEmployeeRatingSection, setAgreementEmployeeRatingSection] = useState<Map<number, boolean>>(new Map());
+    const [agreementEmployeeRatingValue, setAgreementEmployeeRatingValue] = useState<Map<number, number>>(new Map());
+    const [agreementEmployeeCompleteSection, setAgreementEmployeeCompleteSection] = useState<Map<number, boolean>>(new Map());
+    const [agreementEmployeeCompleteGitHubId, setAgreementEmployeeCompleteGitHubId] = useState<Map<number, string>>(new Map());
+    const [agreementEmployeeCompleteRepoName, setAgreementEmployeeCompleteRepoName] = useState<Map<number, string>>(new Map());
+    const [agreementEmployeeCompleteCommitHash, setAgreementEmployeeCompleteCommitHash] = useState<Map<number, string>>(new Map());
     const [myFreelancerAgreementsList, setMyFreelancerAgreementsList] = useState<_AgreementDtoType[] | null | undefined>(null);
     const [myClientAgreementsList, setMyClientAgreementsList] = useState<_AgreementDtoType[] | null | undefined>(null);
 
@@ -161,11 +169,28 @@ export const HomePagev2 = () => {
 
                 if (userRatingResult) {
                     const userRatingDeserialized: number = (function(_userRating: number) {
-                        console.log(_userRating);
-                        const _userRatingDeserialized = _userRating;
+                        console.log(_userRating.valueOf());
+                        const _userRatingDeserialized = _userRating.valueOf();
 
                         return _userRatingDeserialized;
                     })(userRatingResult.valueOf());
+
+                    queryResult2.then((response) => {
+                        const {firstValue: userRatingCounterResult} = new ResultsParser().parseQueryResponse(response, interaction2.getEndpoint());
+
+                        if (userRatingCounterResult) {
+                            const userRatingCounterDeserialized: number = (function(_userRatingCounter: number) {
+                                console.log(_userRatingCounter);
+                                const _userRatingCounterDeserialized = _userRatingCounter.valueOf();
+
+                                return _userRatingCounterDeserialized;
+                            })(userRatingCounterResult.valueOf());
+
+                            // return userRoleStatusDeserialized;
+                            console.log(userRatingCounterDeserialized);
+                            setUserRatingCount(userRatingCounterDeserialized);
+                        }
+                    }).catch((e) => console.warn(e));
 
                     // return userRoleStatusDeserialized;
                     console.log(userRatingDeserialized);
@@ -179,7 +204,7 @@ export const HomePagev2 = () => {
                 if (userRatingCounterResult) {
                     const userRatingCounterDeserialized: number = (function(_userRatingCounter: number) {
                         console.log(_userRatingCounter);
-                        const _userRatingCounterDeserialized = _userRatingCounter;
+                        const _userRatingCounterDeserialized = _userRatingCounter.valueOf();
 
                         return _userRatingCounterDeserialized;
                     })(userRatingCounterResult.valueOf());
@@ -225,6 +250,7 @@ export const HomePagev2 = () => {
         onCreateProject(optionProjectName, optionProjectDescription).then(() => {
             setOptionProjectName("");
             setOptionProjectDescription("");
+            setHideMyProjectsSection(true);
         }).catch(() => {
             console.warn("An error occurred while creating project...");
         })
@@ -250,17 +276,19 @@ export const HomePagev2 = () => {
 
                             console.log(_userProjectsList);
 
-                            _userProjectsList.map((userProject: _ResponseProjectDtoType) => {
+                            _userProjectsList.slice().sort((a, b) => b.project_id - a.project_id).map((userProject: _ResponseProjectDtoType) => {
                                 const _discriminant = (function() {
                                     switch(userProject.project_status.name) {
-                                        case "PendingAgreement":
+                                        case "None":
                                             return 0;
-                                        case "InProgress":
+                                        case "PendingAgreement":
                                             return 1;
-                                        case "Completed":
+                                        case "InProgress":
                                             return 2;
-                                        case "Aborted":
+                                        case "Completed":
                                             return 3;
+                                        case "Aborted":
+                                            return 4;
                                         default:
                                             return -1;
                                     }
@@ -313,17 +341,19 @@ export const HomePagev2 = () => {
                         const pendingProjectsListDeserialized: _ProjectDtoType[] = (function(_pendingProjectsList: _ResponseProjectDtoType[]) {
                             const _pendingProjectsListDeserialized: _ProjectDtoType[] = [];
 
-                            _pendingProjectsList.map((pendingProject: _ResponseProjectDtoType) => {
+                            _pendingProjectsList.slice().sort((a, b) => b.project_id - a.project_id).map((pendingProject: _ResponseProjectDtoType) => {
                                 const _discriminant = (function() {
                                     switch(pendingProject.project_status.name) {
-                                        case "PendingAgreement":
+                                        case "None":
                                             return 0;
-                                        case "InProgress":
+                                        case "PendingAgreement":
                                             return 1;
-                                        case "Completed":
+                                        case "InProgress":
                                             return 2;
-                                        case "Aborted":
+                                        case "Completed":
                                             return 3;
+                                        case "Aborted":
+                                            return 4;
                                         default:
                                             return -1;
                                     }
@@ -389,19 +419,21 @@ export const HomePagev2 = () => {
                     const projectAgreementsListDeserialized: _AgreementDtoType[] = (function(_projectAgreementsList: _ResponseAgreementDtoType[]) {
                         const _projectAgreementsListDeserialized: _AgreementDtoType[] = [];
 
-                        _projectAgreementsList.map((projectAgreement: _ResponseAgreementDtoType) => {
+                        _projectAgreementsList.slice().sort((a, b) => b.agreement_id - a.agreement_id).map((projectAgreement: _ResponseAgreementDtoType) => {
                             const _discriminant = (function() {
                                 switch(projectAgreement.status.name) {
-                                    case "Proposal":
+                                    case "None":
                                         return 0;
-                                    case "InProgress":
+                                    case "Proposal":
                                         return 1;
-                                    case "Declined":
+                                    case "InProgress":
                                         return 2;
-                                    case "Completed":
+                                    case "Declined":
                                         return 3;
-                                    case "Aborted":
+                                    case "Completed":
                                         return 4;
+                                    case "Aborted":
+                                        return 5;
                                     default:
                                         return -1;
                                 }
@@ -453,19 +485,21 @@ export const HomePagev2 = () => {
                         const myFreelaancerAgreementsListDeserialiezd: _AgreementDtoType[] = (function(_myFreelancerAgreementsList: _ResponseAgreementDtoType[]) {
                             const _myFreelancerAgreementsListDeserialized: _AgreementDtoType[] = [];
 
-                            _myFreelancerAgreementsList.map((freelancerAgreement: _ResponseAgreementDtoType) => {
+                            _myFreelancerAgreementsList.slice().sort((a, b) => b.agreement_id - a.agreement_id).map((freelancerAgreement: _ResponseAgreementDtoType) => {
                                 const _discriminant = (function() {
                                     switch(freelancerAgreement.status.name) {
-                                        case "Proposal":
+                                        case "None":
                                             return 0;
-                                        case "InProgress":
+                                        case "Proposal":
                                             return 1;
-                                        case "Declined":
+                                        case "InProgress":
                                             return 2;
-                                        case "Completed":
+                                        case "Declined":
                                             return 3;
-                                        case "Aborted":
+                                        case "Completed":
                                             return 4;
+                                        case "Aborted":
+                                            return 5;
                                         default:
                                             return -1;
                                     }
@@ -517,19 +551,21 @@ export const HomePagev2 = () => {
 
                             console.log(_myClientAgreementsList);
 
-                            _myClientAgreementsList.map((clientAgreement: _ResponseAgreementDtoType) => {
+                            _myClientAgreementsList.slice().sort((a, b) => b.agreement_id - a.agreement_id).map((clientAgreement: _ResponseAgreementDtoType) => {
                                 const _discriminant = (function() {
                                     switch(clientAgreement.status.name) {
-                                        case "Proposal":
+                                        case "None":
                                             return 0;
-                                        case "InProgress":
+                                        case "Proposal":
                                             return 1;
-                                        case "Declined":
+                                        case "InProgress":
                                             return 2;
-                                        case "Completed":
+                                        case "Declined":
                                             return 3;
-                                        case "Aborted":
+                                        case "Completed":
                                             return 4;
+                                        case "Aborted":
+                                            return 5;
                                         default:
                                             return -1;
                                     }
@@ -635,9 +671,82 @@ export const HomePagev2 = () => {
         setAgreementOfferedValue(newMap);
     }
 
+    const handleSeeAgreementEmployeeRatingSection = (index: number) => {
+        const newMap = new Map(agreementEmployeeRatingSection);
+        if (newMap.has(index)) {
+            const oldValue = newMap.get(index);
+            newMap.set(index, !oldValue);
+        } else {
+            newMap.set(index, true);
+        }
+
+        setAgreementEmployeeRatingSection(newMap);
+
+        const newMap2 = new Map(agreementEmployeeRatingValue);
+        newMap2.set(index, 0);
+        setAgreementEmployeeRatingValue(newMap2);
+    }
+
+    const handleAgreementEmployeeRatingValueChange = (index: number, event: ChangeEvent<HTMLInputElement>) => {
+        const newMap = new Map(agreementEmployeeRatingValue);
+
+        newMap.set(index, parseInt(event.target.value));
+
+        setAgreementEmployeeRatingValue(newMap);
+    }
+
+    const handleSeeAgreementEmployeeCompleteSection = (index: number) => {
+        const newMap = new Map(agreementEmployeeCompleteSection);
+        if (newMap.has(index)) {
+            const oldValue = newMap.get(index);
+            newMap.set(index, !oldValue);
+        } else {
+            newMap.set(index, true);
+        }
+
+        setAgreementEmployeeCompleteSection(newMap);
+
+        const newMap3 = new Map(agreementEmployeeCompleteRepoName);
+        newMap3.set(index, "");
+        setAgreementEmployeeCompleteRepoName(newMap3);
+
+        const newMap4 = new Map(agreementEmployeeCompleteGitHubId);
+        newMap4.set(index, "");
+        setAgreementEmployeeCompleteGitHubId(newMap4);
+
+        const newMap5 = new Map(agreementEmployeeCompleteCommitHash);
+        newMap5.set(index, "");
+        setAgreementEmployeeCompleteCommitHash(newMap5);
+    }
+
+    const handleAgreementEmployeeCompleteRepoNameChange = (index: number, event: ChangeEvent<HTMLTextAreaElement>) => {
+        const newMap= new Map(agreementEmployeeCompleteRepoName);
+
+        newMap.set(index, event.target.value);
+
+        setAgreementEmployeeCompleteRepoName(newMap);
+    }
+
+    const handleAgreementEmployeeCompleteGitHubIdChange = (index: number, event: ChangeEvent<HTMLTextAreaElement>) => {
+        const newMap= new Map(agreementEmployeeCompleteGitHubId);
+
+        newMap.set(index, event.target.value);
+
+        setAgreementEmployeeCompleteGitHubId(newMap);
+    }
+
+    const handleAgreementEmployeeCompleteCommitHashChange = (index: number, event: ChangeEvent<HTMLTextAreaElement>) => {
+        const newMap= new Map(agreementEmployeeCompleteCommitHash);
+
+        newMap.set(index, event.target.value);
+
+        setAgreementEmployeeCompleteCommitHash(newMap);
+    }
+
     const handleCreateAgreementTransactionOnClick = (index: number) => {
         try {
             const proposedValue = agreementOfferedValue.get(index);
+            console.log(typeof proposedValue);
             if (undefined != proposedValue && proposedValue > 0 && null != pendingProjectsList) {
                 onCreateAgreement(pendingProjectsList[index].owner_address, pendingProjectsList[index].project_id, proposedValue)
                     .then(() => {})
@@ -654,24 +763,12 @@ export const HomePagev2 = () => {
             const userProjectAgreement = userProjectsAgreementsMap.get(index);
             console.log(userProjectsAgreementsMap);
             if (userProjectAgreement) {
-                onAcceptAgreement(userProjectAgreement[index2].agreement_id)
-                    .then(() => console.log("agreement succesfully accepted"))
+                onAcceptAgreement(userProjectAgreement[index2].agreement_id, userProjectAgreement[index2].value)
+                    .then(() => {
+                        console.log("agreement succesfully accepted");
+                        setHideMyProjectsSection(true);
+                    })
                     .catch((e) => console.warn(e));
-            }
-        } catch (e) {
-            console.warn(e);
-        }
-    }
-
-    const handleCompleteFreelancerAgreementButtonOnClick = (index: number) => {
-        try {
-            if (null != myFreelancerAgreementsList) {
-                const freelancerAgreement = myFreelancerAgreementsList[index];
-                if (freelancerAgreement) {
-                    onCompleteAgreement(freelancerAgreement.agreement_id)
-                        .then(() => console.log("agreement succesfully completed"))
-                        .catch((e) => console.warn(e));
-                }
             }
         } catch (e) {
             console.warn(e);
@@ -684,7 +781,10 @@ export const HomePagev2 = () => {
                 const freelancerAgreement = myFreelancerAgreementsList[index];
                 if (freelancerAgreement) {
                     onAbortFreelancerAgreement(freelancerAgreement.agreement_id)
-                        .then(() => console.log("agreement succesfully aborted"))
+                        .then(() => {
+                            console.log("agreement succesfully aborted")
+                            setHideMyFreelancerAgreementsSection(true);
+                        })
                         .catch((e) => console.warn(e));
                 }
             }
@@ -699,13 +799,99 @@ export const HomePagev2 = () => {
                 const clientAgreement = myClientAgreementsList[index];
                 if (clientAgreement) {
                     onAbortClientAgreement(clientAgreement.agreement_id)
-                        .then(() => console.log("agreement succesfully aborted"))
+                        .then(() => {
+                            console.log("agreement succesfully aborted");
+                            setHideMyClientAgreementsSection(true);
+                        })
                         .catch((e) => console.warn(e));
                 }
             }
         } catch (e) {
             console.warn(e);
         }
+    }
+
+    const handleSubmitEmployeeRatingOnClick = (index: number) => {
+        const agreementRating = agreementEmployeeRatingValue.get(index);
+
+        if (null != agreementRating && (agreementRating < 1 || agreementRating > 5)) {
+            toast.error("Rating value incorrect. Please provide a value between 1 and 5.");
+            return;
+        }
+
+        try {
+            if (null != myClientAgreementsList) {
+                const agreementInfo = myClientAgreementsList[index];
+                if (null != agreementInfo && null != agreementRating) {
+                    onRateFreelancer(agreementInfo.agreement_id, agreementInfo.employee_address, agreementRating)
+                        .then(() => {
+                            console.log("Freelancer successfully rated.");
+                            setHideMyClientAgreementsSection(true);
+                        })
+                        .catch((e) => console.warn(e));
+                }
+            }
+        } catch (e) {
+            console.warn(e);
+        }
+    }
+
+    const handleSubmitEmployeeCompleteOnClick = (index: number) => {
+        const agreementRepoName = agreementEmployeeCompleteRepoName.get(index);
+        const agreementGitHubId = agreementEmployeeCompleteGitHubId.get(index);
+        const agreementCommitHash = agreementEmployeeCompleteCommitHash.get(index);
+
+        if (null != agreementRepoName && agreementRepoName.length == 0) {
+            toast.error("GitHub repository name is invalid.");
+            return;
+        }
+
+        if (null != agreementGitHubId && agreementGitHubId.length == 0) {
+            toast.error("GitHub id is invalid");
+            return;
+        }
+
+        if (null != agreementCommitHash && agreementCommitHash.length == 0) {
+            toast.error("GitHub commit hash is invalid");
+            return;
+        }
+
+        const gitHubCommitCheckUrl = "https://api.github.com/search/commits?q=repo:"
+            + agreementGitHubId
+            + "/"
+            + agreementRepoName
+            + "+hash:"
+            + agreementCommitHash;
+
+        fetch(gitHubCommitCheckUrl)
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                if (data.total_count >= 1) {
+                    toast.success("GitHub Commit validated successfully!");
+                    try {
+                        if (null != myFreelancerAgreementsList) {
+                            const freelancerAgreement = myFreelancerAgreementsList[index];
+                            if (freelancerAgreement) {
+                                onCompleteAgreement(freelancerAgreement.agreement_id)
+                                    .then(() => {
+                                        console.log("agreement succesfully completed");
+                                        setHideMyFreelancerAgreementsSection(true);
+                                    })
+                                    .catch((e) => console.warn(e));
+                            }
+                        }
+                    } catch (e) {
+                        console.warn(e);
+                    }
+                } else {
+                    toast.error("GitHub Commit validation failed");
+                }
+            })
+            .catch(() => {
+                toast.error("Error fetching data from GitHub");
+            });
     }
 
     return(
@@ -763,17 +949,17 @@ export const HomePagev2 = () => {
                                 <LoadingSpinner/>
                             ) : (
                                 <>
-                                    {userProjectsList?.map((item, index) => (
+                                    {userProjectsList?.slice().sort((a, b) => b.project_id - a.project_id).map((item, index) => (
                                         <div className="user-project-agreement-container" key={index}>
                                             <div className="user-project-container" style={{backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430", color: index % 2 == 0 ? "black" : "white"}}>
-                                                <div className="user-project-info" style={{width: item.project_status.discriminant == 0 ? '50%' : '100%'}}>
+                                                <div className="user-project-info" style={{width: item.project_status.discriminant == 1 ? '50%' : '100%'}}>
                                                     <div style={{width: '100%'}}>ID: {item.project_id}</div>
                                                     <div style={{width: '100%'}}>Name: {item.project_name}</div>
                                                     <div style={{width: '100%'}}>Description: {item.project_description}</div>
                                                     <div style={{width: '100%'}}>Status: {item.project_status.name}</div>
                                                 </div>
                                                 {
-                                                    item.project_status.discriminant == 0 && (<div className="user-project-action">
+                                                    item.project_status.discriminant == 1 && (<div className="user-project-action">
                                                         <button className="action-button" onClick={() => handleSeeProjectAgreements(index)}>Project Agreements</button>
                                                     </div>)
                                                 }
@@ -784,12 +970,12 @@ export const HomePagev2 = () => {
                                                     (
                                                         <>
                                                             {
-                                                                userProjectsAgreementsMap.get(index)?.map((agreement, index2) => (
+                                                                userProjectsAgreementsMap.get(index)?.slice().sort((a, b) => b.agreement_id - a.agreement_id).map((agreement, index2) => (
                                                                     <div className="sub-user-project-agreements" key={index2} style={{backgroundColor: "#17cf97", padding: 10}}>
                                                                         <div className="agreement-info">
                                                                             <div style={{width: '100%'}}>ID: {agreement.agreement_id}</div>
                                                                             <div style={{width: '100%'}}>Freelancer Address: {agreement.employee_address.bech32()}</div>
-                                                                            <div style={{width: '100%'}}>Offered Sum: {agreement.value / 10 ** 18} (xEGLD)</div>
+                                                                            <div style={{width: '100%'}}>Offered Sum: {agreement.value} (xEGLD)</div>
                                                                             <div style={{width: '100%'}}>Offer Expiring Date: {(() => {
                                                                                 const currentTimestamp = Date.now();
 
@@ -800,22 +986,22 @@ export const HomePagev2 = () => {
                                                                                 return new Date(agreement.deadline * 1000).toString();
                                                                             })()}</div>
                                                                             <div style={{width: '100%'}}>Status: <span style={
-                                                                                {color: agreement.status.discriminant == 0 ? "yellow"
-                                                                                        : agreement.status.discriminant == 1 ? "pink"
-                                                                                        : agreement.status.discriminant == 2 ? "green" : "red"}}>{agreement.status.name}</span></div>
+                                                                                {color: agreement.status.discriminant == 1 ? "yellow"
+                                                                                        : agreement.status.discriminant == 2 ? "pink"
+                                                                                        : agreement.status.discriminant == 3 ? "green" : "red"}}>{agreement.status.name}</span></div>
                                                                             <div style={{width: '100%'}}>
                                                                                 Employee rated: {agreement.employee_rated ? 'True' : 'False'}
                                                                             </div>
                                                                         </div>
                                                                         <div className="agreement-action">
                                                                             {
-                                                                                agreement.status.discriminant == 0 && (<button className="create-project-with-transaction-button" onClick={() => handleAcceptAgreementTransactionOnClick(index, index2)} style={{marginBottom: 10}}>Accept</button>)
+                                                                                agreement.status.discriminant == 1 && (<button className="create-project-with-transaction-button" onClick={() => handleAcceptAgreementTransactionOnClick(index, index2)} style={{marginBottom: 10}}>Accept</button>)
                                                                             }
                                                                             {
-                                                                                agreement.status.discriminant == 0 && (<button className="create-project-with-transaction-button">Refuse</button>)
+                                                                                agreement.status.discriminant == 2 && (<button className="create-project-with-transaction-button">Refuse</button>)
                                                                             }
                                                                             {
-                                                                                agreement.status.discriminant == 1 && (<button className="create-project-with-transaction-button">Abort</button>)
+                                                                                agreement.status.discriminant == 3 && (<button className="create-project-with-transaction-button">Abort</button>)
                                                                             }
                                                                         </div>
                                                                     </div>
@@ -841,7 +1027,7 @@ export const HomePagev2 = () => {
                                 <LoadingSpinner/>
                             ) : (
                                 <>
-                                    {pendingProjectsList?.map((item, index) => (
+                                    {pendingProjectsList?.slice().sort((a, b) => b.project_id - a.project_id).map((item, index) => (
                                         <div className="user-project-agreement-container" key={index}>
                                             <div className="user-project-container" style={{backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430", color: index % 2 == 0 ? "black" : "white"}}>
                                                 <div className="user-project-info">
@@ -882,15 +1068,18 @@ export const HomePagev2 = () => {
                                 <LoadingSpinner/>
                             ) : (
                                 <>
-                                    {myFreelancerAgreementsList?.map((agreement, index) => (
+                                    {myFreelancerAgreementsList?.slice().sort((a, b) => b.agreement_id - a.agreement_id).map((agreement, index) => (
                                         <div className="user-project-agreement-container" key={index}>
-                                            <div className="user-project-container" style={{backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430", color: index % 2 == 0 ? "black" : "white"}}>
+                                            <div className="user-project-container" style={{
+                                                backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430",
+                                                color: index % 2 == 0 ? "black" : "white"
+                                            }}>
                                                 <div className="user-project-info">
                                                     <div style={{width: '100%'}}>ID: {agreement.agreement_id}</div>
                                                     <div style={{width: '100%'}}>Client
                                                         Address: {agreement.employer_address.bech32()}</div>
                                                     <div style={{width: '100%'}}>Offered
-                                                        Sum: {agreement.value / 10 ** 18} (xEGLD)
+                                                        Sum: {agreement.value} (xEGLD)
                                                     </div>
                                                     <div style={{width: '100%'}}>Offer Expiring Date: {(() => {
                                                         const currentTimestamp = Date.now();
@@ -903,9 +1092,10 @@ export const HomePagev2 = () => {
                                                     })()}</div>
                                                     <div style={{width: '100%'}}>Status: <span style={
                                                         {
-                                                            color: agreement.status.discriminant == 0 ? "yellow"
-                                                                : agreement.status.discriminant == 1 ? "pink"
-                                                                    : agreement.status.discriminant == 2 ? "green" : "red"
+                                                            color: agreement.status.discriminant == 1 ? "yellow"
+                                                                : agreement.status.discriminant == 2 ? "pink"
+                                                                    : agreement.status.discriminant == 3 ? "red"
+                                                                        : agreement.status.discriminant == 4 ? "green" : "orange"
                                                         }}>{agreement.status.name}</span></div>
                                                     <div style={{width: '100%'}}>
                                                         Employee rated: {agreement.employee_rated ? 'True' : 'False'}
@@ -913,12 +1103,50 @@ export const HomePagev2 = () => {
                                                 </div>
                                                 <div className="user-project-action">
                                                     {
-                                                        agreement.status.discriminant == 1 && (<button className="action-button"
-                                                            onClick={() => handleCompleteFreelancerAgreementButtonOnClick(index)}
-                                                            style={{marginRight: 10}}>Complete</button>
+                                                        agreement.status.discriminant == 2 && (
+                                                            <button className="action-button"
+                                                                    onClick={() => handleSeeAgreementEmployeeCompleteSection(index)}
+                                                                    style={{marginRight: 10}}>Complete</button>
                                                         )
                                                     }
-                                                    <button className="action-button" onClick={() => handleAbortFreelancerAgreementButtonOnClick(index)}>Abort</button>
+                                                    {
+                                                        (
+                                                            // agreement.status.discriminant == 1
+                                                            agreement.status.discriminant == 2
+                                                        ) && (<button className="action-button"
+                                                                      onClick={() => handleAbortFreelancerAgreementButtonOnClick(index)}>Abort</button>
+                                                        )
+                                                    }
+                                                </div>
+                                                <div className="user-project-agreements">
+                                                    {
+                                                        true === agreementEmployeeCompleteSection.get(index) &&
+                                                        (
+                                                            <>
+                                                                <div className="agreement-action">
+                                                                    <_TextArea label="GitHub Repository:"
+                                                                               onChange={(event) => handleAgreementEmployeeCompleteRepoNameChange(index, event)}
+                                                                               borderColor="#1b2430"
+                                                                               outlineColor="#17cf97"
+                                                                               marginBottom={15}/>
+                                                                    <_TextArea label="GitHub ID:"
+                                                                               onChange={(event) => handleAgreementEmployeeCompleteGitHubIdChange(index, event)}
+                                                                               borderColor="#1b2430"
+                                                                               outlineColor="#17cf97"
+                                                                               marginBottom={15}/>
+                                                                    <_TextArea label="GitHub Commit Hash:"
+                                                                               onChange={(event) => handleAgreementEmployeeCompleteCommitHashChange(index, event)}
+                                                                               borderColor="#1b2430"
+                                                                               outlineColor="#17cf97"
+                                                                               marginBottom={15}/>
+                                                                    <button
+                                                                        className="create-project-with-transaction-button"
+                                                                        onClick={() => handleSubmitEmployeeCompleteOnClick(index)}>Submit
+                                                                    </button>
+                                                                </div>
+                                                            </>
+                                                        )
+                                                    }
                                                 </div>
                                             </div>
                                             {/*<div className="user-project-agreements">*/}
@@ -950,15 +1178,18 @@ export const HomePagev2 = () => {
                                 <LoadingSpinner/>
                             ) : (
                                 <>
-                                    {myClientAgreementsList?.map((agreement, index) => (
+                                    {myClientAgreementsList?.slice().sort((a, b) => b.agreement_id - a.agreement_id).map((agreement, index) => (
                                         <div className="user-project-agreement-container" key={index}>
-                                            <div className="user-project-container" style={{backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430", color: index % 2 == 0 ? "black" : "white"}}>
+                                            <div className="user-project-container" style={{
+                                                backgroundColor: index % 2 == 0 ? "#17cf97" : "#1b2430",
+                                                color: index % 2 == 0 ? "black" : "white"
+                                            }}>
                                                 <div className="user-project-info">
                                                     <div style={{width: '100%'}}>ID: {agreement.agreement_id}</div>
                                                     <div style={{width: '100%'}}>Client
                                                         Address: {agreement.employer_address.bech32()}</div>
                                                     <div style={{width: '100%'}}>Offered
-                                                        Sum: {agreement.value / 10 ** 18} (xEGLD)
+                                                        Sum: {agreement.value} (xEGLD)
                                                     </div>
                                                     <div style={{width: '100%'}}>Offer Expiring Date: {(() => {
                                                         const currentTimestamp = Date.now();
@@ -971,9 +1202,9 @@ export const HomePagev2 = () => {
                                                     })()}</div>
                                                     <div style={{width: '100%'}}>Status: <span style={
                                                         {
-                                                            color: agreement.status.discriminant == 0 ? "yellow"
-                                                                : agreement.status.discriminant == 1 ? "pink"
-                                                                    : agreement.status.discriminant == 2 ? "green" : "red"
+                                                            color: agreement.status.discriminant == 1 ? "yellow"
+                                                                : agreement.status.discriminant == 2 ? "pink"
+                                                                    : agreement.status.discriminant == 3 ? "green" : "red"
                                                         }}>{agreement.status.name}</span></div>
                                                     <div style={{width: '100%'}}>
                                                         Employee rated: {agreement.employee_rated ? 'True' : 'False'}
@@ -985,12 +1216,35 @@ export const HomePagev2 = () => {
                                                     {/*        style={{marginRight: 10}}>Mark as complete</button>*/}
                                                     {
                                                         !agreement.employee_rated
-                                                        && agreement.status.discriminant == 3
-                                                        &&  <button className="action-button" style={{marginRight: 10}} onClick={() => handleSeeProjectAgreementProposal(index)}>Rate</button>
+                                                        && agreement.status.discriminant == 4
+                                                        && <button className="action-button" style={{marginRight: 10}}
+                                                                   onClick={() => handleSeeAgreementEmployeeRatingSection(index)}>Rate</button>
                                                     }
                                                     {
-                                                        agreement.status.discriminant == 1
-                                                        && <button className="action-button" onClick={() => handleAbortClientAgreementButtonOnClick(index)}>Abort</button>
+                                                        agreement.status.discriminant == 2
+                                                        && <button className="action-button"
+                                                                   onClick={() => handleAbortClientAgreementButtonOnClick(index)}>Abort</button>
+                                                    }
+                                                </div>
+                                                <div className="user-project-agreements">
+                                                    {
+                                                        true === agreementEmployeeRatingSection.get(index) &&
+                                                        (
+                                                            <>
+                                                                <div className="agreement-action">
+                                                                    <_InputField label="Rating(1-5):" type="number"
+                                                                                 value = {agreementEmployeeRatingValue.get(index)}
+                                                                                 onChange={(event) => handleAgreementEmployeeRatingValueChange(index, event)}
+                                                                                 borderColor="#1b2430"
+                                                                                 outlineColor="#17cf97"
+                                                                                 marginBottom={15}/>
+                                                                    <button
+                                                                        className="create-project-with-transaction-button"
+                                                                        onClick={() => handleSubmitEmployeeRatingOnClick(index)}>Submit
+                                                                    </button>
+                                                                </div>
+                                                            </>
+                                                        )
                                                     }
                                                 </div>
                                             </div>

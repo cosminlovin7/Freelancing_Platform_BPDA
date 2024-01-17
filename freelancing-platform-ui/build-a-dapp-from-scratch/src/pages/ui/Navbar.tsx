@@ -29,10 +29,6 @@ class Navbar extends Component<NavbarProps> {
         clicked: false
     };
 
-    userInfo = {
-        rating: this.props.userRating && this.props.userRatingCount ? this.props.userRating / this.props.userRatingCount : NaN
-     }
-
     handleMenuButtonClick = () => {
         this.setState({clicked: !this.state.clicked});
     }
@@ -51,7 +47,11 @@ class Navbar extends Component<NavbarProps> {
                             <div style={{color: "white"}}><BalanceSection/></div>
                             <div style={{color: "white"}}>Role: {this.props.userRole ? this.props.userRole : ''}</div>
                             {
-                                this.props.userRole && this.props.userRole == 'Freelancer' && <div style={{color: "white"}}>Rating: {this.userInfo.rating}</div>
+                                null != this.props.userRating
+                                && null != this.props.userRatingCount
+                                && this.props.userRole
+                                && this.props.userRole == 'Freelancer'
+                                && <div style={{color: "white"}}>Rating:  {this.props.userRating / this.props.userRatingCount}</div>
                             }
                         </div>
                     )

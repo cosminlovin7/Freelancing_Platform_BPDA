@@ -20,7 +20,7 @@ function App() {
           <TransactionsToastList/>
           <Routes>
               <Route path="/unlock" element={<UnlockPage/>}/>
-              <Route path="/v2" element={<HomePagev2/>}/>
+              <Route path="/" element={<HomePagev2/>}/>
           </Routes>
       </Router>
     </DappProvider>

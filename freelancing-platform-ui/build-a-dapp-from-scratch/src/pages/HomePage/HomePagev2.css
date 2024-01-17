@@ -185,8 +185,28 @@
     cursor: pointer;
 }
 
+.user-project-agreements {
+    flex-direction: column;
+    /*margin: 5% 15%;*/
+}
+
+/*.agreement-info {*/
+/*    padding: 20px;*/
+/*    !*border-radius: 10px;*!*/
+/*    margin: 5%;*/
+/*}*/
+
 .sub-user-project-agreements {
     display: flex;
     justify-content: center;
     align-items: center;
+
+    margin: 5%;
 }
+
+/*.container-5 {*/
+/*    height: 750px;*/
+/*    overflow: auto;*/
+/*    scroll-behavior: smooth;*/
+/*    margin: 5%;*/
+/*}*/

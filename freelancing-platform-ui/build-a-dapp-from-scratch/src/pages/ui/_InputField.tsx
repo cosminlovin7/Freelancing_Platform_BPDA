@@ -55,7 +55,13 @@ class _InputField extends Component<_InputFieldProps> {
             <div className="component-container">
                 <div className="input-field-container">
                     <label className="label" htmlFor="input-field-id">{this.props.label}</label>
-                    <input type={this.props.type} style={{...this.textAreaStyle}} id="input-field-id" value={this.props.value} onChange={this.handleInputFieldOnChange} className="input-field"></input>
+                    <input type={this.props.type}
+                           style={{...this.textAreaStyle}}
+                           id="input-field-id"
+                           value={this.props.value}
+                           onChange={this.handleInputFieldOnChange}
+                           className="input-field">
+                    </input>
                 </div>
             </div>
         );

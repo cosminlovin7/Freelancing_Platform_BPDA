@@ -30,14 +30,16 @@ export const _useGetUserProjects = () => {
                     _userProjectsList.map((userProject: _ResponseProjectDtoType) => {
                         const _discriminant = (function() {
                             switch(userProject.project_status.name) {
-                                case "PendingAgreement":
+                                case "None":
                                     return 0;
-                                case "InProgress":
+                                case "PendingAgreement":
                                     return 1;
-                                case "Completed":
+                                case "InProgress":
                                     return 2;
-                                case "Aborted":
+                                case "Completed":
                                     return 3;
+                                case "Aborted":
+                                    return 4;
                                 default:
                                     return -1;
                             }

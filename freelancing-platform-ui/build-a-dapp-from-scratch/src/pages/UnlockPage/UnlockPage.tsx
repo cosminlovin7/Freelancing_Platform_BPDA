@@ -45,14 +45,14 @@ export const UnlockPage = () => {
                                 <h2>Login with:</h2>
                                 <ExtensionLoginButton
                                     loginButtonText="DeFi Wallet"
-                                    callbackRoute="/v2"
+                                    callbackRoute="/"
                                     onLoginRedirect={() => {
-                                        navigate("/v2");
+                                        navigate("/");
                                     }}
                                 />
                                 <WebWalletLoginButton
                                     loginButtonText="Web Wallet"
-                                    callbackRoute="/v2"
+                                    callbackRoute="/"
                                 />
                             </>
                         )

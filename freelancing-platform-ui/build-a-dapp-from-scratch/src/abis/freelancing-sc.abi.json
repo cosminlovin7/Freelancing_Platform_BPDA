@@ -157,9 +157,6 @@
         {
             "name": "create_agreement",
             "mutability": "mutable",
-            "payableInTokens": [
-                "EGLD"
-            ],
             "inputs": [
                 {
                     "name": "employer_addr",
@@ -168,6 +165,10 @@
                 {
                     "name": "proj_id",
                     "type": "u32"
+                },
+                {
+                    "name": "proposed_value",
+                    "type": "BigUint"
                 }
             ],
             "outputs": []
@@ -175,6 +176,9 @@
         {
             "name": "accept_agreement",
             "mutability": "mutable",
+            "payableInTokens": [
+                "EGLD"
+            ],
             "inputs": [
                 {
                     "name": "agreement_id",
@@ -490,24 +494,28 @@
             "type": "enum",
             "variants": [
                 {
-                    "name": "Proposal",
+                    "name": "None",
                     "discriminant": 0
                 },
                 {
-                    "name": "InProgress",
+                    "name": "Proposal",
                     "discriminant": 1
                 },
                 {
-                    "name": "Declined",
+                    "name": "InProgress",
                     "discriminant": 2
                 },
                 {
-                    "name": "Completed",
+                    "name": "Declined",
                     "discriminant": 3
                 },
                 {
-                    "name": "Aborted",
+                    "name": "Completed",
                     "discriminant": 4
+                },
+                {
+                    "name": "Aborted",
+                    "discriminant": 5
                 }
             ]
         },
@@ -540,20 +548,24 @@
             "type": "enum",
             "variants": [
                 {
-                    "name": "PendingAgreement",
+                    "name": "None",
                     "discriminant": 0
                 },
                 {
-                    "name": "InProgress",
+                    "name": "PendingAgreement",
                     "discriminant": 1
                 },
                 {
-                    "name": "Completed",
+                    "name": "InProgress",
                     "discriminant": 2
                 },
                 {
-                    "name": "Aborted",
+                    "name": "Completed",
                     "discriminant": 3
+                },
+                {
+                    "name": "Aborted",
+                    "discriminant": 4
                 }
             ]
         },

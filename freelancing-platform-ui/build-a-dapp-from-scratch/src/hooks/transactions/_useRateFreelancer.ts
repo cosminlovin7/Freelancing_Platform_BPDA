@@ -9,7 +9,7 @@ export const _useRateFreelancer = () => {
 
     const getRateFreelancerTransaction = (agreement_id: number, employee_addr: Address, employee_rating: number) => {
         return _SmartContract.methods
-            .create_agreement([agreement_id.toString(16), employee_addr, employee_rating.toString(16)])
+            .rate_employee([agreement_id, employee_addr, employee_rating])
             .withGasLimit(10000000)
             .withChainID(getChainID())
             .withSender(Address.fromString(account.address))

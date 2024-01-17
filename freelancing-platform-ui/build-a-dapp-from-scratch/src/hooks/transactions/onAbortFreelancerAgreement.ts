@@ -9,7 +9,7 @@ export const _useAbortFreelancerAgreement = () => {
 
     const getAbortFreelancerAgreementTransaction = (agreement_id: number) => {
         return _SmartContract.methods
-            .abort_employee_agreement([agreement_id.toString(16)])
+            .abort_employee_agreement([agreement_id])
             .withGasLimit(10000000)
             .withChainID(getChainID())
             .withSender(Address.fromString(account.address))
@@ -23,9 +23,9 @@ export const _useAbortFreelancerAgreement = () => {
         await sendTransactions({
             transactions: abortFreelancerAgreementTransaction,
             transactionsDisplayInfo: {
-                processingMessage: 'Accepting agreement in progress...',
-                errorMessage: 'An error has occurred during agreement acceptance',
-                successMessage: 'Agreement accepted successfully'
+                processingMessage: 'Aborting agreement in progress...',
+                errorMessage: 'An error has occurred during agreement abort',
+                successMessage: 'Agreement aborted successfully'
             },
             redirectAfterSign: false
         });

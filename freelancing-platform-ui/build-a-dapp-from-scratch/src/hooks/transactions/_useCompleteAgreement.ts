@@ -9,7 +9,7 @@ export const _useCompleteAgreement = () => {
 
     const getCompleteAgreementTransaction = (agreement_id: number) => {
         return _SmartContract.methods
-            .complete_agreement([agreement_id.toString(16)])
+            .complete_agreement([agreement_id])
             .withGasLimit(10000000)
             .withChainID(getChainID())
             .withSender(Address.fromString(account.address))
